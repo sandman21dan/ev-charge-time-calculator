@@ -58,6 +58,7 @@ This is specifically made for EVs that don't have a feature to limit charging an
 - **Languages Used**: HTML, CSS, JavaScript
 - **Dependencies**: None (no external libraries or frameworks)
 - **Local Storage**: Used to retain input values across sessions, providing a better user experience.
+- **Built with ChatGPT**: This tool has 99% been built with ChatGPT and the original conversation is included in this repo.
 
 ## Setup
 
