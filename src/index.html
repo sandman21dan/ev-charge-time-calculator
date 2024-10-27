@@ -4,49 +4,123 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EV Charging Calculator</title>
+    <style>
+        /* Basic styles for the layout */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            color: #333;
+        }
+        .container {
+            max-width: 400px;
+            margin: auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+        }
+        input[type="number"], input[type="time"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .results p {
+            font-size: 18px;
+            margin: 10px 0;
+            color: #333;
+        }
+    </style>
 </head>
 <body>
-    <h1>EV Charging Calculator</h1>
-    <div>
-        <label for="batteryCapacity">Battery Capacity (kWh):</label>
-        <input type="number" id="batteryCapacity" min="1" step="0.1" required>
+    <div class="container">
+        <h1>EV Charging Calculator</h1>
+        <div class="form-group">
+            <label for="batteryCapacity">Battery Capacity (kWh):</label>
+            <input type="number" id="batteryCapacity" min="1" step="0.1" required>
+        </div>
+        <div class="form-group">
+            <label for="chargingSpeed">Charging Speed (kW):</label>
+            <input type="number" id="chargingSpeed" min="1" step="0.1" required>
+        </div>
+        <div class="form-group">
+            <label for="currentCharge">Current State of Charge (%):</label>
+            <input type="number" id="currentCharge" min="0" max="100" step="1" required>
+        </div>
+        <div class="form-group">
+            <label for="desiredCharge">Desired State of Charge (%):</label>
+            <input type="number" id="desiredCharge" min="0" max="100" step="1" required>
+        </div>
+        <div class="form-group">
+            <label for="chargeByTime">Charge By Time (HH:MM):</label>
+            <input type="time" id="chargeByTime" required>
+        </div>
+        <button onclick="calculateCharging()">Calculate</button>
+        <div class="results">
+            <h2>Results</h2>
+            <p id="hoursRequired">Hours Required: -</p>
+            <p id="plugInTime">Plug-in Time: -</p>
+        </div>
     </div>
-    <div>
-        <label for="chargingSpeed">Charging Speed (kW):</label>
-        <input type="number" id="chargingSpeed" min="1" step="0.1" required>
-    </div>
-    <div>
-        <label for="desiredCharge">Desired State of Charge (%):</label>
-        <input type="number" id="desiredCharge" min="0" max="100" step="1" required>
-    </div>
-    <div>
-        <label for="chargeByTime">Charge By Time (HH:MM):</label>
-        <input type="time" id="chargeByTime" required>
-    </div>
-    <button onclick="calculateCharging()">Calculate</button>
-    <h2>Results</h2>
-    <p id="hoursRequired">Hours Required: -</p>
-    <p id="plugInTime">Plug-in Time: -</p>
 
     <script>
+        // Load stored values on page load
+        document.addEventListener("DOMContentLoaded", () => {
+            if (localStorage.getItem("batteryCapacity")) document.getElementById("batteryCapacity").value = localStorage.getItem("batteryCapacity");
+            if (localStorage.getItem("chargingSpeed")) document.getElementById("chargingSpeed").value = localStorage.getItem("chargingSpeed");
+            if (localStorage.getItem("currentCharge")) document.getElementById("currentCharge").value = localStorage.getItem("currentCharge");
+            if (localStorage.getItem("desiredCharge")) document.getElementById("desiredCharge").value = localStorage.getItem("desiredCharge");
+            if (localStorage.getItem("chargeByTime")) document.getElementById("chargeByTime").value = localStorage.getItem("chargeByTime");
+        });
+
+        // Calculate charging requirements
         function calculateCharging() {
             // Gather inputs
             const batteryCapacity = parseFloat(document.getElementById("batteryCapacity").value);
             const chargingSpeed = parseFloat(document.getElementById("chargingSpeed").value);
+            const currentCharge = parseFloat(document.getElementById("currentCharge").value);
             const desiredCharge = parseFloat(document.getElementById("desiredCharge").value);
             const chargeByTime = document.getElementById("chargeByTime").value;
 
             // Validate inputs
-            if (isNaN(batteryCapacity) || isNaN(chargingSpeed) || isNaN(desiredCharge) || !chargeByTime) {
+            if (isNaN(batteryCapacity) || isNaN(chargingSpeed) || isNaN(currentCharge) || isNaN(desiredCharge) || !chargeByTime) {
                 alert("Please fill out all fields correctly.");
                 return;
             }
 
-            // Calculate charging requirements
-            const requiredChargeKWh = (desiredCharge / 100) * batteryCapacity;
+            // Calculate the charge required and time to achieve the target charge
+            const requiredChargeKWh = ((desiredCharge - currentCharge) / 100) * batteryCapacity;
             const hoursRequired = requiredChargeKWh / chargingSpeed;
 
-            // Parse target time
+            // Parse the target time
             const [targetHour, targetMinute] = chargeByTime.split(":").map(Number);
             const targetDate = new Date();
             targetDate.setHours(targetHour, targetMinute, 0, 0);
@@ -61,6 +135,13 @@
             // Display results
             document.getElementById("hoursRequired").innerText = `Hours Required: ${hoursRequiredFormatted}`;
             document.getElementById("plugInTime").innerText = `Plug-in Time: ${plugInTimeFormatted}`;
+
+            // Store values in local storage
+            localStorage.setItem("batteryCapacity", batteryCapacity);
+            localStorage.setItem("chargingSpeed", chargingSpeed);
+            localStorage.setItem("currentCharge", currentCharge);
+            localStorage.setItem("desiredCharge", desiredCharge);
+            localStorage.setItem("chargeByTime", chargeByTime);
         }
     </script>
 </body>
