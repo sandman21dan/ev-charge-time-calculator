@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EV Charging Calculator</title>
+</head>
+<body>
+    <h1>EV Charging Calculator</h1>
+    <div>
+        <label for="batteryCapacity">Battery Capacity (kWh):</label>
+        <input type="number" id="batteryCapacity" min="1" step="0.1" required>
+    </div>
+    <div>
+        <label for="chargingSpeed">Charging Speed (kW):</label>
+        <input type="number" id="chargingSpeed" min="1" step="0.1" required>
+    </div>
+    <div>
+        <label for="desiredCharge">Desired State of Charge (%):</label>
+        <input type="number" id="desiredCharge" min="0" max="100" step="1" required>
+    </div>
+    <div>
+        <label for="chargeByTime">Charge By Time (HH:MM):</label>
+        <input type="time" id="chargeByTime" required>
+    </div>
+    <button onclick="calculateCharging()">Calculate</button>
+    <h2>Results</h2>
+    <p id="hoursRequired">Hours Required: -</p>
+    <p id="plugInTime">Plug-in Time: -</p>
+
+    <script>
+        function calculateCharging() {
+            // Gather inputs
+            const batteryCapacity = parseFloat(document.getElementById("batteryCapacity").value);
+            const chargingSpeed = parseFloat(document.getElementById("chargingSpeed").value);
+            const desiredCharge = parseFloat(document.getElementById("desiredCharge").value);
+            const chargeByTime = document.getElementById("chargeByTime").value;
+
+            // Validate inputs
+            if (isNaN(batteryCapacity) || isNaN(chargingSpeed) || isNaN(desiredCharge) || !chargeByTime) {
+                alert("Please fill out all fields correctly.");
+                return;
+            }
+
+            // Calculate charging requirements
+            const requiredChargeKWh = (desiredCharge / 100) * batteryCapacity;
+            const hoursRequired = requiredChargeKWh / chargingSpeed;
+
+            // Parse target time
+            const [targetHour, targetMinute] = chargeByTime.split(":").map(Number);
+            const targetDate = new Date();
+            targetDate.setHours(targetHour, targetMinute, 0, 0);
+
+            // Calculate plug-in time
+            const plugInTime = new Date(targetDate.getTime() - hoursRequired * 60 * 60 * 1000);
+
+            // Format results
+            const hoursRequiredFormatted = hoursRequired.toFixed(2);
+            const plugInTimeFormatted = plugInTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            // Display results
+            document.getElementById("hoursRequired").innerText = `Hours Required: ${hoursRequiredFormatted}`;
+            document.getElementById("plugInTime").innerText = `Plug-in Time: ${plugInTimeFormatted}`;
+        }
+    </script>
+</body>
+</html>
