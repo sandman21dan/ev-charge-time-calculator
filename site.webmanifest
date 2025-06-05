@@ -1,6 +1,6 @@
 {
-  "name": "MyWebSite",
-  "short_name": "MySite",
+  "name": "EV Charging Calculator",
+  "short_name": "EV Charging",
   "icons": [
     {
       "src": "/ev-charge-time-calculator/web-app-manifest-192x192.png",
