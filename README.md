@@ -1,6 +1,6 @@
 # EV Charging Calculator
 
-**Live Demo**: [https://sandman21dan.github.io/ev-charge-time-calculator/](https://sandman21dan.github.io/ev-charge-time-calculator/)
+**Live Demo**: [https://ev-charge.danielperez.co.uk](ev-charge.danielperez.co.uk)
 
 A simple web tool for electric vehicle (EV) owners to calculate the number of hours required to charge their car to a desired level by a specified time. This tool is built using plain HTML, CSS, and JavaScript, with no external dependencies or frameworks.
 
