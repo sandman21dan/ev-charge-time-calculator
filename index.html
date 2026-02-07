@@ -96,6 +96,7 @@
         <button onclick="calculateCharging()">Calculate</button>
         <div class="results">
             <h2>Results</h2>
+            <p id="totalKwh">Kwh: -</p>
             <p id="hoursRequired">Hours Required: -</p>
             <p id="plugInTime">Plug-in Time: -</p>
         </div>
@@ -143,6 +144,7 @@
             const plugInTimeFormatted = plugInTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
             // Display results
+            document.getElementById("totalKwh").innerText = `Kwh: ${requiredChargeKWh}`;
             document.getElementById("hoursRequired").innerText = `Hours Required: ${hoursRequiredFormatted}`;
             document.getElementById("plugInTime").innerText = `Plug-in Time: ${plugInTimeFormatted}`;
 

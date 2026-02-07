@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ev-charge-time-calculator-v1';
+const CACHE_NAME = 'ev-charge-time-calculator-v2';
 const urlsToCache = [
     '/',
     '/index.html',
