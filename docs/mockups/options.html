@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EV Slow Charge Planner - Design Concepts</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a; /* Dark slate background for the presentation wrapper */
+            background-image: radial-gradient(circle at 50% 0%, #1e293b 0%, #0f172a 70%);
+        }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        
+        /* Hide scrollbar for cleaner look in the previews */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="min-h-screen text-slate-200 py-12 px-4 flex flex-col items-center gap-16">
+
+    <div class="text-center max-w-2xl mb-4">
+        <h1 class="text-3xl font-bold text-white mb-2">EV Planner Design Concepts</h1>
+        <p class="text-slate-400">Scroll down to view three distinct aesthetic directions for your app. These are built mobile-first.</p>
+    </div>
+
+    <div class="w-full max-w-md">
+        <h2 class="text-cyan-400 font-mono text-sm uppercase tracking-widest mb-4 ml-2">Option 1: Tech-Sleek</h2>
+        <div class="bg-zinc-950 rounded-[2rem] p-6 shadow-2xl border border-zinc-800 relative overflow-hidden">
+            <div class="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-24 bg-cyan-500/10 blur-3xl rounded-full pointer-events-none"></div>
+
+            <div class="mb-10 relative z-10">
+                <div class="flex justify-between text-zinc-400 text-sm font-medium mb-4">
+                    <span>Current <span class="text-white">20%</span></span>
+                    <span>Target <span class="text-cyan-400">80%</span></span>
+                </div>
+                <div class="h-4 bg-zinc-900 rounded-full border border-zinc-800 relative flex items-center shadow-inner">
+                    <div class="absolute left-[20%] right-[20%] h-full bg-gradient-to-r from-zinc-700 to-cyan-500 rounded-full opacity-80"></div>
+                    <div class="absolute left-[20%] w-6 h-6 bg-zinc-900 border-2 border-zinc-500 rounded-full -translate-x-1/2 shadow-lg z-10 cursor-pointer"></div>
+                    <div class="absolute right-[20%] w-6 h-6 bg-zinc-900 border-2 border-cyan-400 rounded-full translate-x-1/2 shadow-[0_0_10px_rgba(34,211,238,0.5)] z-10 cursor-pointer"></div>
+                </div>
+            </div>
+
+            <div class="mb-10 z-10 relative">
+                <div class="flex justify-between items-center mb-3">
+                    <span class="text-zinc-400 text-sm font-medium">Charge Speed</span>
+                    <button class="text-xs text-zinc-500 hover:text-cyan-400 flex items-center gap-1 transition-colors">
+                        <i class="ph ph-arrows-left-right"></i> Use Volts/Amps
+                    </button>
+                </div>
+                <div class="grid grid-cols-3 gap-3">
+                    <label class="cursor-pointer">
+                        <input type="radio" name="speed_1" class="peer sr-only">
+                        <div class="p-3 rounded-xl border border-zinc-800 bg-zinc-900/50 text-center peer-checked:border-cyan-400 peer-checked:bg-cyan-400/10 transition-all hover:bg-zinc-800">
+                            <i class="ph ph-plug text-zinc-500 peer-checked:text-cyan-400 text-xl mb-1"></i>
+                            <div class="text-white font-mono text-sm">2.3</div>
+                            <div class="text-[10px] text-zinc-500">kW</div>
+                        </div>
+                    </label>
+                    <label class="cursor-pointer">
+                        <input type="radio" name="speed_1" class="peer sr-only" checked>
+                        <div class="p-3 rounded-xl border border-zinc-800 bg-zinc-900/50 text-center peer-checked:border-cyan-400 peer-checked:bg-cyan-400/10 transition-all hover:bg-zinc-800">
+                            <i class="ph ph-house-line text-zinc-500 peer-checked:text-cyan-400 text-xl mb-1"></i>
+                            <div class="text-white font-mono text-sm">7.4</div>
+                            <div class="text-[10px] text-zinc-500">kW</div>
+                        </div>
+                    </label>
+                    <label class="cursor-pointer">
+                        <input type="radio" name="speed_1" class="peer sr-only">
+                        <div class="p-3 rounded-xl border border-zinc-800 bg-zinc-900/50 text-center peer-checked:border-cyan-400 peer-checked:bg-cyan-400/10 transition-all hover:bg-zinc-800">
+                            <i class="ph ph-faders text-zinc-500 peer-checked:text-cyan-400 text-xl mb-1"></i>
+                            <div class="text-white font-mono text-sm">Custom</div>
+                            <div class="text-[10px] text-zinc-500">Input</div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="bg-zinc-900/80 backdrop-blur-md rounded-2xl p-5 border border-zinc-800 shadow-lg">
+                <div class="flex items-center gap-2 mb-4 text-cyan-400 text-sm font-medium">
+                    <i class="ph-fill ph-check-circle text-lg"></i> Ready by 07:00 AM
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <div class="text-zinc-500 text-xs mb-1">Energy Required</div>
+                        <div class="text-xl font-mono text-white">43.2 <span class="text-sm text-zinc-500">kWh</span></div>
+                    </div>
+                    <div>
+                        <div class="text-zinc-500 text-xs mb-1">Duration</div>
+                        <div class="text-xl font-mono text-white">5h 50m</div>
+                    </div>
+                </div>
+
+                <div class="bg-cyan-500/10 border border-cyan-500/20 rounded-xl p-4 flex justify-between items-center">
+                    <span class="text-cyan-100 text-sm font-medium">Plug in car by</span>
+                    <span class="text-2xl font-mono font-bold text-cyan-400">01:10 AM</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="w-full max-w-md">
+        <h2 class="text-slate-400 font-medium text-sm tracking-wide mb-4 ml-2">Option 2: Nordic Minimalist</h2>
+        <div class="bg-white rounded-[24px] p-8 shadow-sm border border-slate-200">
+            
+            <div class="mb-10">
+                <div class="flex justify-between text-slate-500 text-sm font-medium mb-5">
+                    <span class="flex flex-col">Current <span class="text-slate-900 font-semibold text-lg mt-1">20%</span></span>
+                    <span class="flex flex-col text-right">Target <span class="text-blue-600 font-semibold text-lg mt-1">80%</span></span>
+                </div>
+                <div class="h-2 bg-slate-100 rounded-full relative flex items-center">
+                    <div class="absolute left-[20%] right-[20%] h-full bg-blue-600 rounded-full"></div>
+                    <div class="absolute left-[20%] w-7 h-7 bg-white border border-slate-200 rounded-full -translate-x-1/2 shadow-[0_2px_8px_rgba(0,0,0,0.1)] z-10 cursor-pointer flex items-center justify-center">
+                        <div class="w-1.5 h-1.5 bg-slate-300 rounded-full"></div>
+                    </div>
+                    <div class="absolute right-[20%] w-7 h-7 bg-white border border-slate-200 rounded-full translate-x-1/2 shadow-[0_2px_8px_rgba(0,0,0,0.1)] z-10 cursor-pointer flex items-center justify-center">
+                        <div class="w-1.5 h-1.5 bg-blue-600 rounded-full"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-10">
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-slate-900 font-medium">Charging Power</span>
+                    <button class="text-xs text-blue-600 font-medium hover:underline">
+                        Switch to V/A
+                    </button>
+                </div>
+                <div class="flex gap-3">
+                    <label class="cursor-pointer flex-1">
+                        <input type="radio" name="speed_2" class="peer sr-only">
+                        <div class="py-3 px-2 rounded-2xl border border-slate-200 bg-white text-center peer-checked:border-slate-900 peer-checked:bg-slate-900 peer-checked:text-white transition-all text-slate-500 hover:border-slate-300">
+                            <div class="font-semibold text-sm peer-checked:text-white">2.3 kW</div>
+                            <div class="text-[10px] mt-0.5 opacity-80">Granny</div>
+                        </div>
+                    </label>
+                    <label class="cursor-pointer flex-1">
+                        <input type="radio" name="speed_2" class="peer sr-only" checked>
+                        <div class="py-3 px-2 rounded-2xl border border-slate-200 bg-white text-center peer-checked:border-slate-900 peer-checked:bg-slate-900 peer-checked:text-white transition-all text-slate-500 hover:border-slate-300">
+                            <div class="font-semibold text-sm peer-checked:text-white">7.4 kW</div>
+                            <div class="text-[10px] mt-0.5 opacity-80">Wallbox</div>
+                        </div>
+                    </label>
+                    <label class="cursor-pointer flex-1">
+                        <input type="radio" name="speed_2" class="peer sr-only">
+                        <div class="py-3 px-2 rounded-2xl border border-slate-200 bg-white text-center peer-checked:border-slate-900 peer-checked:bg-slate-900 peer-checked:text-white transition-all text-slate-500 hover:border-slate-300">
+                            <div class="font-semibold text-sm peer-checked:text-white">Custom</div>
+                            <div class="text-[10px] mt-0.5 opacity-80">Manual</div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="bg-slate-50 rounded-2xl p-6">
+                <div class="grid grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <div class="text-slate-500 text-xs uppercase tracking-wider mb-1">Energy</div>
+                        <div class="text-xl font-semibold text-slate-900">43.2 <span class="text-sm text-slate-500 font-normal">kWh</span></div>
+                    </div>
+                    <div>
+                        <div class="text-slate-500 text-xs uppercase tracking-wider mb-1">Time required</div>
+                        <div class="text-xl font-semibold text-slate-900">5<span class="text-sm text-slate-500 font-normal">h</span> 50<span class="text-sm text-slate-500 font-normal">m</span></div>
+                    </div>
+                </div>
+
+                <div class="pt-5 border-t border-slate-200 flex justify-between items-end">
+                    <div>
+                        <div class="text-slate-500 text-sm mb-1">To finish by 07:00 AM</div>
+                        <div class="text-slate-900 font-medium">Start charging at</div>
+                    </div>
+                    <div class="text-3xl font-bold tracking-tight text-blue-600">01:10</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="w-full max-w-md pb-12">
+        <h2 class="text-stone-400 font-medium text-sm tracking-wide mb-4 ml-2">Option 3: Eco-Utility (Featuring Gradient)</h2>
+        <div class="bg-stone-50 rounded-[2.5rem] p-6 shadow-sm border-2 border-stone-200">
+            
+            <div class="mb-10 bg-white p-5 rounded-3xl border border-stone-100 shadow-sm">
+                <div class="flex justify-between text-stone-600 text-sm font-medium mb-5">
+                    <span>From <span class="text-stone-900 font-bold ml-1">20%</span></span>
+                    <span>To <span class="text-emerald-700 font-bold ml-1">80%</span></span>
+                </div>
+                <div class="h-6 bg-stone-100 rounded-full relative flex items-center border-2 border-stone-200 shadow-inner overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-r from-rose-200 via-amber-200 to-emerald-200 opacity-30"></div>
+                    
+                    <div class="absolute left-[20%] right-[20%] h-full bg-gradient-to-r from-rose-300 via-amber-300 to-emerald-300"></div>
+                    
+                    <div class="absolute left-[20%] w-5 h-8 bg-white border-2 border-stone-800 rounded-md -translate-x-1/2 shadow-sm z-10 cursor-pointer flex items-center justify-center">
+                        <div class="w-1 h-3 bg-stone-300 rounded-full"></div>
+                    </div>
+                    <div class="absolute right-[20%] w-5 h-8 bg-white border-2 border-stone-800 rounded-md translate-x-1/2 shadow-sm z-10 cursor-pointer flex items-center justify-center">
+                        <div class="w-1 h-3 bg-stone-300 rounded-full"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-10 px-2 z-10 relative">
+                <div class="flex justify-between items-center mb-3">
+                    <span class="text-stone-800 font-medium">Input Power</span>
+                    <button class="text-sm bg-stone-200 text-stone-600 px-3 py-1 rounded-full hover:bg-stone-300 transition-colors">
+                        V/A Calc
+                    </button>
+                </div>
+                <div class="flex gap-2 bg-stone-200/50 p-1.5 rounded-full">
+                    <label class="cursor-pointer flex-1">
+                        <input type="radio" name="speed_3" class="peer sr-only">
+                        <div class="py-2.5 rounded-full text-center peer-checked:bg-white peer-checked:shadow-sm peer-checked:text-stone-900 transition-all text-stone-500 font-medium text-sm">
+                            2.3 kW
+                        </div>
+                    </label>
+                    <label class="cursor-pointer flex-1">
+                        <input type="radio" name="speed_3" class="peer sr-only" checked>
+                        <div class="py-2.5 rounded-full text-center peer-checked:bg-white peer-checked:shadow-sm peer-checked:text-stone-900 transition-all text-stone-500 font-medium text-sm">
+                            7.4 kW
+                        </div>
+                    </label>
+                    <label class="cursor-pointer flex-1">
+                        <input type="radio" name="speed_3" class="peer sr-only">
+                        <div class="py-2.5 rounded-full text-center peer-checked:bg-white peer-checked:shadow-sm peer-checked:text-stone-900 transition-all text-stone-500 font-medium text-sm">
+                            Custom
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="bg-emerald-900 rounded-[2rem] p-6 text-emerald-50 relative overflow-hidden">
+                <i class="ph ph-lightning absolute -right-4 -top-4 text-9xl text-emerald-800 opacity-50"></i>
+                
+                <div class="relative z-10">
+                    <h3 class="text-emerald-300 text-sm font-medium mb-6">Charge Summary</h3>
+                    
+                    <div class="flex items-end gap-3 mb-6">
+                        <div class="text-5xl font-bold tracking-tight">01:10</div>
+                        <div class="text-emerald-200 mb-1">AM</div>
+                    </div>
+                    <div class="text-sm text-emerald-100 mb-6">Latest time to plug in to be ready by 07:00 AM.</div>
+
+                    <div class="flex gap-4 border-t border-emerald-800 pt-5">
+                        <div class="flex-1 bg-emerald-800/50 rounded-2xl p-3 text-center">
+                            <i class="ph ph-battery-charging text-emerald-400 text-xl mb-1"></i>
+                            <div class="font-bold text-lg">43.2</div>
+                            <div class="text-[11px] text-emerald-300 uppercase tracking-wider">kWh needed</div>
+                        </div>
+                        <div class="flex-1 bg-emerald-800/50 rounded-2xl p-3 text-center">
+                            <i class="ph ph-clock text-emerald-400 text-xl mb-1"></i>
+                            <div class="font-bold text-lg">5h 50m</div>
+                            <div class="text-[10px] text-emerald-300 uppercase tracking-wider">Duration</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
+

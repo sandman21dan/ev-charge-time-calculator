@@ -3,164 +3,880 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EV Charging Calculator</title>
+    <title>EV Charge Planner</title>
     <link rel="icon" type="image/png" href="favicon-96x96.png" sizes="96x96" />
     <link rel="shortcut icon" href="favicon.ico" />
     <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
     <link rel="manifest" href="site.webmanifest" />
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
-        /* Basic styles for the layout */
-        body {
-            font-family: Arial, sans-serif;
+        /* ==========================================================================
+           1. CSS Variables (The Design System)
+           ========================================================================== */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+        :root {
+            --bg-base: #09090b;
+            --bg-card: rgba(24, 24, 27, 0.4);
+            --bg-card-solid: #18181b;
+            --bg-card-hover: rgba(39, 39, 42, 0.8);
+            
+            --border-light: #27272a;
+            --border-focus: #3f3f46;
+            
+            --text-primary: #f4f4f5;
+            --text-secondary: #a1a1aa;
+            --text-muted: #52525b;
+            
+            --accent: #22d3ee;
+            --accent-glow: rgba(34, 211, 238, 0.4);
+            --accent-bg-subtle: rgba(34, 211, 238, 0.1);
+            
+            --font-sans: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+            --radius-2xl: 24px;
+        }
+
+        /* ==========================================================================
+           2. Base Resets & Global Styles
+           ========================================================================== */
+        * {
+            box-sizing: border-box;
             margin: 0;
-            padding: 20px;
-            background-color: #f4f4f4;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
         }
-        h1 {
-            color: #333;
-            text-align: center;
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--bg-base);
+            background-image: radial-gradient(circle at 50% -20%, var(--bg-card-solid) 0%, var(--bg-base) 80%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            -webkit-font-smoothing: antialiased;
         }
-        .container {
-            max-width: 400px;
-            margin: auto;
-            padding: 20px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-base); }
+        ::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--border-focus); }
+
+        .font-mono { font-family: var(--font-mono); }
+        
+        /* ==========================================================================
+           3. Layout & Structure
+           ========================================================================== */
+        .navbar {
+            border-bottom: 1px solid rgba(39, 39, 42, 0.8);
+            background: rgba(9, 9, 11, 0.5);
+            backdrop-filter: blur(12px);
+            position: sticky;
+            top: 0;
+            z-index: 50;
         }
-        .form-group {
-            margin-bottom: 15px;
+
+        .nav-content {
+            max-width: 1152px;
+            margin: 0 auto;
+            padding: 0 24px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
-        label {
-            font-weight: bold;
+
+        .main-container {
+            flex-grow: 1;
+            width: 100%;
+            max-width: 1152px;
+            margin: 0 auto;
+            padding: 32px 24px;
+        }
+
+        .layout-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 32px;
+        }
+
+        @media (min-width: 1024px) {
+            .layout-grid {
+                grid-template-columns: 7fr 5fr;
+            }
+            .sticky-column {
+                position: sticky;
+                top: 96px;
+            }
+        }
+
+        .inner-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+        }
+
+        @media (min-width: 768px) {
+            .inner-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        /* ==========================================================================
+           4. Components
+           ========================================================================== */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-2xl);
+            padding: 24px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            position: relative;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            margin-bottom: 20px;
+        }
+
+        .card-header i { color: var(--accent); font-size: 1.25rem; }
+
+        /* Inputs */
+        .input-group label {
             display: block;
-            margin-bottom: 5px;
-            color: #555;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
         }
-        input[type="number"], input[type="time"] {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 16px;
-            box-sizing: border-box; /* Ensures padding is included in the width */
+
+        .input-wrapper {
+            position: relative;
         }
-        button {
+
+        .base-input {
             width: 100%;
-            padding: 10px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            font-size: 16px;
+            background: rgba(9, 9, 11, 0.5);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-xl);
+            padding: 12px 16px;
+            color: var(--text-primary);
+            font-size: 1.125rem;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .base-input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 1px var(--accent);
+        }
+
+        .input-suffix {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            pointer-events: none;
+        }
+
+        input[type="time"]::-webkit-calendar-picker-indicator {
+            filter: invert(1) opacity(0.5);
             cursor: pointer;
-            transition: background-color 0.3s ease;
-            margin-top: 10px;
         }
-        button:hover {
-            background-color: #0056b3;
+
+        /* Hide Number Input Arrows */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
         }
-        .results {
-            margin-top: 20px;
+        input[type=number] {
+            -moz-appearance: textfield;
         }
-        .results p {
-            font-size: 18px;
-            margin: 10px 0;
-            color: #333;
+
+        /* Slider Component */
+        .slider-glow-bg {
+            position: absolute;
+            top: 0; left: 50%; transform: translateX(-50%);
+            width: 50%; height: 64px;
+            background: rgba(34, 211, 238, 0.05);
+            filter: blur(24px);
+            border-radius: 50%;
+            pointer-events: none;
         }
+
+        .slider-labels { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px; }
+        .slider-label-group { display: flex; flex-direction: column; }
+        .slider-label-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); margin-bottom: 4px; }
+        .slider-label-value { font-size: 1.5rem; }
+        .slider-label-value span { font-size: 0.875rem; color: var(--text-secondary); }
+        .target-val { color: var(--accent); }
+        .target-val span { color: rgba(34, 211, 238, 0.5); }
+
+        .slider-container {
+            position: relative;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            touch-action: none;
+        }
+
+        .slider-track {
+            height: 16px;
+            width: 100%;
+            background: var(--bg-base);
+            border: 1px solid var(--border-light);
+            border-radius: 999px;
+            position: relative;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .slider-fill {
+            position: absolute;
+            height: 100%;
+            background: linear-gradient(to right, #3f3f46, var(--accent));
+            border-radius: 999px;
+            opacity: 0.8;
+        }
+
+        .slider-handle {
+            position: absolute;
+            top: 50%;
+            width: 28px; height: 28px;
+            background: var(--bg-card-solid);
+            border: 3px solid;
+            border-radius: 50%;
+            cursor: grab;
+            transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+            z-index: 20;
+            transform: translate(-50%, -50%);
+        }
+        .slider-handle:active { cursor: grabbing; }
+
+        .handle-current { border-color: var(--text-secondary); }
+        .handle-current:hover { border-color: var(--text-primary); }
+        
+        .handle-target { border-color: var(--accent); box-shadow: 0 0 15px var(--accent-glow); }
+        .handle-target:hover { background: #083344; }
+
+        /* Power Grid (Radios) */
+        .power-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .btn-text { background: none; border: none; color: var(--text-secondary); font-size: 0.75rem; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: color 0.2s; }
+        .btn-text:hover { color: var(--accent); }
+        
+        .radio-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+
+        .radio-item { cursor: pointer; }
+        .radio-item input[type="radio"] { display: none; }
+        
+        .radio-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            padding: 8px;
+            background: rgba(9, 9, 11, 0.5);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            transition: all 0.2s;
+        }
+
+        .radio-box:hover { background: var(--bg-card-hover); }
+        
+        .radio-val { font-size: 0.875rem; color: var(--text-primary); }
+        .radio-sub { font-size: 0.625rem; color: var(--text-secondary); margin-top: 2px; display: flex; align-items: center; gap: 2px;}
+
+        /* Checked State Styling */
+        .radio-item input[type="radio"]:checked + .radio-box {
+            border-color: var(--accent);
+            background: var(--accent-bg-subtle);
+            box-shadow: 0 0 10px rgba(34, 211, 238, 0.05);
+        }
+        .radio-item input[type="radio"]:checked + .radio-box .radio-val { color: var(--accent); font-weight: 700; }
+        .radio-item input[type="radio"]:checked + .radio-box .radio-sub { color: rgba(34, 211, 238, 0.7); }
+        
+        .col-span-2 { grid-column: span 2; }
+        .custom-box { flex-direction: row; gap: 8px; }
+
+        /* Summary Card */
+        .summary-card {
+            background: rgba(24, 24, 27, 0.8);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(39, 39, 42, 0.8);
+            box-shadow: 0 20px 40px -15px rgba(0,0,0,0.5);
+            overflow: hidden;
+        }
+
+        .tech-pattern {
+            position: absolute;
+            inset: 0;
+            opacity: 0.1;
+            background-image: radial-gradient(var(--accent) 1px, transparent 1px);
+            background-size: 24px 24px;
+            pointer-events: none;
+        }
+
+        .summary-title { font-size: 0.875rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 32px; }
+        
+        .stat-row { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 1px solid var(--border-light); padding-bottom: 16px; margin-bottom: 24px; }
+        .stat-label { color: var(--text-secondary); }
+        .stat-value { font-size: 1.5rem; color: var(--text-primary); }
+        .stat-unit { font-size: 0.875rem; color: var(--text-secondary); }
+
+        .final-action {
+            background: rgba(8, 51, 68, 0.3);
+            border: 1px solid rgba(34, 211, 238, 0.3);
+            border-radius: var(--radius-xl);
+            padding: 24px;
+            text-align: center;
+            box-shadow: 0 0 30px rgba(34, 211, 238, 0.1);
+        }
+
+        .final-hint { font-size: 0.875rem; color: rgba(34, 211, 238, 0.8); margin-bottom: 8px; font-weight: 500;}
+        .final-label { color: rgba(212, 212, 216, 1); font-size: 1.125rem; margin-bottom: 4px; }
+        .final-time {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--accent);
+            text-shadow: 0 0 10px rgba(34, 211, 238, 0.3);
+        }
+        .final-ampm { font-size: 1.25rem; color: rgba(34, 211, 238, 0.6); font-weight: 500; }
+
+        /* Custom Input Section */
+        #customPowerInputs {
+            display: none;
+            margin-top: 16px;
+            gap: 12px;
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hidden { display: none !important; }
+
+        /* Utilities */
+        .mb-8 { margin-bottom: 32px; }
+        .z-10 { position: relative; z-index: 10; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>EV Charging Calculator</h1>
-        <div class="form-group">
-            <label for="batteryCapacity">Battery Capacity (kW):</label>
-            <input type="number" id="batteryCapacity" min="1" step="0.1" required>
+
+    <nav class="navbar">
+        <div class="nav-content">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                    <img src="logo.svg" />
+                </div>
+                <span style="font-weight: 700; font-size: 1.125rem; letter-spacing: -0.025em;">ChargePlan</span>
+            </div>
         </div>
-        <div class="form-group">
-            <label for="chargingSpeed">Charging Speed (kWh):</label>
-            <input type="number" id="chargingSpeed" min="1" step="0.1" required>
+    </nav>
+
+    <main class="main-container">
+        
+        <header class="mb-8">
+            <h1 style="font-size: 1.875rem; font-weight: 700; margin-bottom: 8px;">Plan your charge</h1>
+            <p style="color: var(--text-secondary); font-size: 0.875rem;">Set your battery capacity, target SoC, and departure time.</p>
+        </header>
+
+        <div class="layout-grid">
+            
+            <div style="display: flex; flex-direction: column; gap: 24px;">
+                
+                <section class="card">
+                    <div class="card-header">
+                        <i class="ph ph-car-profile"></i> Vehicle Specs
+                    </div>
+                    <div class="input-group">
+                        <label>Usable Battery Capacity</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="batteryCapacity" value="54.0" step="1" class="base-input font-mono">
+                            <span class="input-suffix font-mono">kWh</span>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="card">
+                    <div class="slider-glow-bg"></div>
+                    <div class="card-header z-10">
+                        <i class="ph ph-battery-charging"></i> State of Charge (SoC)
+                    </div>
+                    <div class="z-10">
+                        <div class="slider-labels">
+                            <div class="slider-label-group">
+                                <span class="slider-label-title">Current</span>
+                                <div class="slider-label-value font-mono"><span id="currentSoCVal">20</span><span>%</span></div>
+                            </div>
+                            <div class="slider-label-group" style="text-align: right;">
+                                <span class="slider-label-title" style="color: rgba(34,211,238,0.8);">Target</span>
+                                <div class="slider-label-value target-val font-mono"><span id="targetSoCVal">80</span><span>%</span></div>
+                            </div>
+                        </div>
+                        <div class="slider-container" id="socSlider">
+                            <div class="slider-track">
+                                <div class="slider-fill" id="sliderFill"></div>
+                                <div class="slider-handle handle-current" id="handleCurrent"></div>
+                                <div class="slider-handle handle-target" id="handleTarget"></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="inner-grid">
+                    
+                    <section class="card" style="display: flex; flex-direction: column;">
+                        <div class="power-header">
+                            <div class="card-header" style="margin-bottom: 0;">
+                                <i class="ph ph-plug"></i> Power Limit
+                            </div>
+                            <button class="btn-text" id="togglePowerMode">
+                                <i class="ph ph-arrows-left-right"></i> <span id="toggleText">Use Volts/Amps</span>
+                            </button>
+                        </div>
+                        
+                        <div id="kwSelector">
+                            <div class="radio-grid font-mono">
+                                <label class="radio-item">
+                                    <input type="radio" name="speed" value="1.38">
+                                    <div class="radio-box">
+                                        <span class="radio-val">1.38</span>
+                                        <span class="radio-sub"><i class="ph-fill ph-lightning" style="font-size: 8px;"></i> 6A</span>
+                                    </div>
+                                </label>
+                                <label class="radio-item">
+                                    <input type="radio" name="speed" value="1.84">
+                                    <div class="radio-box">
+                                        <span class="radio-val">1.84</span>
+                                        <span class="radio-sub"><i class="ph-fill ph-lightning" style="font-size: 8px;"></i> 8A</span>
+                                    </div>
+                                </label>
+                                <label class="radio-item">
+                                    <input type="radio" name="speed" value="2.3">
+                                    <div class="radio-box">
+                                        <span class="radio-val">2.3</span>
+                                        <span class="radio-sub"><i class="ph-fill ph-lightning" style="font-size: 8px;"></i> 10A</span>
+                                    </div>
+                                </label>
+                                <label class="radio-item">
+                                    <input type="radio" name="speed" value="3.0">
+                                    <div class="radio-box">
+                                        <span class="radio-val">3.0</span>
+                                        <span class="radio-sub"><i class="ph-fill ph-lightning" style="font-size: 8px;"></i> 13A</span>
+                                    </div>
+                                </label>
+                                <label class="radio-item">
+                                    <input type="radio" name="speed" value="3.68">
+                                    <div class="radio-box">
+                                        <span class="radio-val">3.68</span>
+                                        <span class="radio-sub"><i class="ph-fill ph-lightning" style="font-size: 8px;"></i> 16A</span>
+                                    </div>
+                                </label>
+                                <label class="radio-item">
+                                    <input type="radio" name="speed" value="5.0">
+                                    <div class="radio-box">
+                                        <span class="radio-val">5.0</span>
+                                        <span class="radio-sub"><i class="ph-fill ph-lightning" style="font-size: 8px;"></i> 20A</span>
+                                    </div>
+                                </label>
+                                <label class="radio-item">
+                                    <input type="radio" name="speed" value="7.4" checked>
+                                    <div class="radio-box">
+                                        <span class="radio-val">7.4</span>
+                                        <span class="radio-sub"><i class="ph-fill ph-lightning" style="font-size: 8px;"></i> 32A</span>
+                                    </div>
+                                </label>
+                                <label class="radio-item col-span-2">
+                                    <input type="radio" name="speed" value="custom" id="speedCustom">
+                                    <div class="radio-box custom-box font-sans">
+                                        <i class="ph ph-faders"></i>
+                                        <span class="radio-val" style="font-size: 0.75rem; font-weight: 500;">Custom kW</span>
+                                    </div>
+                                </label>
+                            </div>
+                            <div id="customKwInput" style="display: none; margin-top: 12px;">
+                                <div class="input-wrapper">
+                                    <input type="number" id="customKwValue" value="11.0" step="1" class="base-input font-mono">
+                                    <span class="input-suffix font-mono">kW</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="vaSelector" class="hidden">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                                <div class="input-group">
+                                    <label>Volts</label>
+                                    <div class="input-wrapper">
+                                        <input type="number" id="inputVolts" value="230" step="10" class="base-input font-mono">
+                                        <span class="input-suffix font-mono">V</span>
+                                    </div>
+                                </div>
+                                <div class="input-group">
+                                    <label>Amps</label>
+                                    <div class="input-wrapper">
+                                        <input type="number" id="inputAmps" value="16" class="base-input font-mono">
+                                        <span class="input-suffix font-mono">A</span>
+                                    </div>
+                                    </div>
+                                    </div>
+                                    <div style="margin-top: 16px; text-align: right;">
+                                    <span style="font-size: 0.875rem; color: var(--text-secondary);">Resulting Power:</span>
+                                    <span class="font-mono" style="font-size: 1.125rem; color: var(--accent); margin-left: 8px;">
+                                    <span id="vaResultKw">3.7</span> kW
+                                    </span>
+                                    </div>
+                                    </div>
+                                    </section>
+
+
+                    <section class="card" style="display: flex; flex-direction: column;">
+                        <div class="card-header">
+                            <i class="ph ph-clock"></i> Departure Time
+                        </div>
+                        <div class="input-group" style="flex-grow: 1; display: flex; flex-direction: column; justify-content: center;">
+                            <label>Car must be ready by</label>
+                            <input type="time" id="departureTime" value="07:00" class="base-input font-mono" style="text-align: center; font-size: 1.5rem; padding: 16px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);">
+                        </div>
+                    </section>
+
+                </div>
+            </div>
+
+            <div class="sticky-column">
+                <aside class="card summary-card">
+                    <div class="tech-pattern"></div>
+                    <div class="z-10">
+                        <h2 class="summary-title">Calculation Result</h2>
+                        
+                        <div style="margin-bottom: 32px;">
+                            <div class="stat-row">
+                                <div class="stat-label">Energy Needed</div>
+                                <div class="stat-value font-mono"><span id="resEnergy">32.4</span> <span class="stat-unit">kWh</span></div>
+                            </div>
+                            <div class="stat-row">
+                                <div class="stat-label">Charge Duration</div>
+                                <div class="stat-value font-mono"><span id="resHours">4</span><span class="stat-unit">h</span> <span id="resMins">22</span><span class="stat-unit">m</span></div>
+                            </div>
+                        </div>
+
+                        <div class="final-action">
+                            <div class="final-hint">To hit target by <span id="resDeparture">07:00 AM</span></div>
+                            <div class="final-label">Plug in your EV by</div>
+                            <div class="final-time font-mono">
+                                <span id="resPlugTime">02:38</span>
+                                <span class="final-ampm" id="resPlugAMPM">AM</span>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+
         </div>
-        <div class="form-group">
-            <label for="currentCharge">Current State of Charge (%):</label>
-            <input type="number" id="currentCharge" min="0" max="100" step="1" required>
-        </div>
-        <div class="form-group">
-            <label for="desiredCharge">Desired State of Charge (%):</label>
-            <input type="number" id="desiredCharge" min="0" max="100" step="1" required>
-        </div>
-        <div class="form-group">
-            <label for="chargeByTime">Charge By Time (HH:MM):</label>
-            <input type="time" id="chargeByTime" required>
-        </div>
-        <button onclick="calculateCharging()">Calculate</button>
-        <div class="results">
-            <h2>Results</h2>
-            <p id="totalKwh">Kwh: -</p>
-            <p id="hoursRequired">Hours Required: -</p>
-            <p id="plugInTime">Plug-in Time: -</p>
-        </div>
-    </div>
+    </main>
 
     <script>
-        // Load stored values on page load
-        document.addEventListener("DOMContentLoaded", () => {
-            if (localStorage.getItem("batteryCapacity")) document.getElementById("batteryCapacity").value = localStorage.getItem("batteryCapacity");
-            if (localStorage.getItem("chargingSpeed")) document.getElementById("chargingSpeed").value = localStorage.getItem("chargingSpeed");
-            if (localStorage.getItem("currentCharge")) document.getElementById("currentCharge").value = localStorage.getItem("currentCharge");
-            if (localStorage.getItem("desiredCharge")) document.getElementById("desiredCharge").value = localStorage.getItem("desiredCharge");
-            if (localStorage.getItem("chargeByTime")) document.getElementById("chargeByTime").value = localStorage.getItem("chargeByTime");
-        });
+        // State
+        let state = {
+            batteryCapacity: 54,
+            currentSoC: 20,
+            targetSoC: 80,
+            powerMode: 'kw', // 'kw' or 'va'
+            chargingSpeed: 7.4,
+            volts: 230,
+            amps: 16,
+            departureTime: '07:00',
+            customKw: 11.0
+        };
 
-        // Calculate charging requirements
-        function calculateCharging() {
-            // Gather inputs
-            const batteryCapacity = parseFloat(document.getElementById("batteryCapacity").value);
-            const chargingSpeed = parseFloat(document.getElementById("chargingSpeed").value);
-            const currentCharge = parseFloat(document.getElementById("currentCharge").value);
-            const desiredCharge = parseFloat(document.getElementById("desiredCharge").value);
-            const chargeByTime = document.getElementById("chargeByTime").value;
+        // DOM Elements
+        const elements = {
+            batteryCapacity: document.getElementById('batteryCapacity'),
+            currentSoCVal: document.getElementById('currentSoCVal'),
+            targetSoCVal: document.getElementById('targetSoCVal'),
+            socSlider: document.getElementById('socSlider'),
+            handleCurrent: document.getElementById('handleCurrent'),
+            handleTarget: document.getElementById('handleTarget'),
+            sliderFill: document.getElementById('sliderFill'),
+            togglePowerMode: document.getElementById('togglePowerMode'),
+            toggleText: document.getElementById('toggleText'),
+            kwSelector: document.getElementById('kwSelector'),
+            vaSelector: document.getElementById('vaSelector'),
+            customKwInput: document.getElementById('customKwInput'),
+            customKwValue: document.getElementById('customKwValue'),
+            inputVolts: document.getElementById('inputVolts'),
+            inputAmps: document.getElementById('inputAmps'),
+            departureTime: document.getElementById('departureTime'),
+            resEnergy: document.getElementById('resEnergy'),
+            resHours: document.getElementById('resHours'),
+            resMins: document.getElementById('resMins'),
+            resDeparture: document.getElementById('resDeparture'),
+            resPlugTime: document.getElementById('resPlugTime'),
+            resPlugAMPM: document.getElementById('resPlugAMPM'),
+            vaResultKw: document.getElementById('vaResultKw')
+        };
 
-            // Validate inputs
-            if (isNaN(batteryCapacity) || isNaN(chargingSpeed) || isNaN(currentCharge) || isNaN(desiredCharge) || !chargeByTime) {
-                alert("Please fill out all fields correctly.");
-                return;
+        // Initialize
+        function init() {
+            loadState();
+            setupEventListeners();
+            updateUI();
+            calculate();
+        }
+
+        function loadState() {
+            const saved = localStorage.getItem('ev_planner_state');
+            if (saved) {
+                state = { ...state, ...JSON.parse(saved) };
+            } else {
+                // Try legacy keys
+                const legacyBattery = localStorage.getItem('batteryCapacity');
+                const legacySpeed = localStorage.getItem('chargingSpeed');
+                const legacyCurrent = localStorage.getItem('currentCharge');
+                const legacyTarget = localStorage.getItem('desiredCharge');
+                const legacyTime = localStorage.getItem('chargeByTime');
+
+                if (legacyBattery) state.batteryCapacity = parseFloat(legacyBattery);
+                if (legacySpeed) state.chargingSpeed = parseFloat(legacySpeed);
+                if (legacyCurrent) state.currentSoC = parseFloat(legacyCurrent);
+                if (legacyTarget) state.targetSoC = parseFloat(legacyTarget);
+                if (legacyTime) state.departureTime = legacyTime;
+            }
+            
+            // Sync inputs with state
+            elements.batteryCapacity.value = state.batteryCapacity;
+            elements.departureTime.value = state.departureTime;
+            elements.customKwValue.value = state.customKw;
+            elements.inputVolts.value = state.volts;
+            elements.inputAmps.value = state.amps;
+            
+            // Sync radios
+            const radios = document.querySelectorAll('input[name="speed"]');
+            let matched = false;
+            radios.forEach(r => {
+                if (parseFloat(r.value) == state.chargingSpeed) {
+                    r.checked = true;
+                    matched = true;
+                }
+            });
+            if (!matched && state.powerMode === 'kw') {
+                document.getElementById('speedCustom').checked = true;
+                elements.customKwInput.style.display = 'block';
+            }
+        }
+
+        function saveState() {
+            localStorage.setItem('ev_planner_state', JSON.stringify(state));
+        }
+
+        function setupEventListeners() {
+            elements.batteryCapacity.addEventListener('input', (e) => {
+                state.batteryCapacity = parseFloat(e.target.value) || 0;
+                calculate();
+                saveState();
+            });
+
+            elements.departureTime.addEventListener('input', (e) => {
+                state.departureTime = e.target.value;
+                calculate();
+                saveState();
+            });
+
+            elements.togglePowerMode.addEventListener('click', () => {
+                state.powerMode = state.powerMode === 'kw' ? 'va' : 'kw';
+                updateUI();
+                calculate();
+                saveState();
+            });
+
+            document.querySelectorAll('input[name="speed"]').forEach(r => {
+                r.addEventListener('change', (e) => {
+                    if (e.target.value === 'custom') {
+                        elements.customKwInput.style.display = 'block';
+                        state.chargingSpeed = parseFloat(elements.customKwValue.value) || 0;
+                    } else {
+                        elements.customKwInput.style.display = 'none';
+                        state.chargingSpeed = parseFloat(e.target.value);
+                    }
+                    calculate();
+                    saveState();
+                });
+            });
+
+            elements.customKwValue.addEventListener('input', (e) => {
+                state.customKw = parseFloat(e.target.value) || 0;
+                state.chargingSpeed = state.customKw;
+                calculate();
+                saveState();
+            });
+
+            elements.inputVolts.addEventListener('input', (e) => {
+                state.volts = parseFloat(e.target.value) || 0;
+                calculate();
+                saveState();
+            });
+
+            elements.inputAmps.addEventListener('input', (e) => {
+                state.amps = parseFloat(e.target.value) || 0;
+                calculate();
+                saveState();
+            });
+
+            // Slider Logic
+            setupSlider();
+        }
+
+        function setupSlider() {
+            let isDragging = null;
+
+            const updateFromPointer = (e) => {
+                const rect = elements.socSlider.getBoundingClientRect();
+                const x = (e.clientX || (e.touches && e.touches[0].clientX)) - rect.left;
+                let percent = Math.round((x / rect.width) * 100);
+                percent = Math.max(0, Math.min(100, percent));
+
+                if (isDragging === 'current') {
+                    state.currentSoC = Math.min(percent, state.targetSoC - 1);
+                } else if (isDragging === 'target') {
+                    state.targetSoC = Math.max(percent, state.currentSoC + 1);
+                }
+                
+                updateSliderUI();
+                calculate();
+                saveState();
+            };
+
+            const onStart = (type) => (e) => {
+                isDragging = type;
+                document.addEventListener('mousemove', updateFromPointer);
+                document.addEventListener('mouseup', onEnd);
+                document.addEventListener('touchmove', updateFromPointer);
+                document.addEventListener('touchend', onEnd);
+                e.preventDefault();
+            };
+
+            const onEnd = () => {
+                isDragging = null;
+                document.removeEventListener('mousemove', updateFromPointer);
+                document.removeEventListener('mouseup', onEnd);
+                document.removeEventListener('touchmove', updateFromPointer);
+                document.removeEventListener('touchend', onEnd);
+            };
+
+            elements.handleCurrent.addEventListener('mousedown', onStart('current'));
+            elements.handleCurrent.addEventListener('touchstart', onStart('current'));
+            elements.handleTarget.addEventListener('mousedown', onStart('target'));
+            elements.handleTarget.addEventListener('touchstart', onStart('target'));
+
+            // Click on track to jump
+            elements.socSlider.addEventListener('mousedown', (e) => {
+                if (e.target !== elements.handleCurrent && e.target !== elements.handleTarget) {
+                    const rect = elements.socSlider.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const percent = Math.round((x / rect.width) * 100);
+                    
+                    // Move closest handle
+                    if (Math.abs(percent - state.currentSoC) < Math.abs(percent - state.targetSoC)) {
+                        state.currentSoC = Math.min(percent, state.targetSoC - 1);
+                        isDragging = 'current';
+                    } else {
+                        state.targetSoC = Math.max(percent, state.currentSoC + 1);
+                        isDragging = 'target';
+                    }
+                    updateSliderUI();
+                    calculate();
+                    saveState();
+                    onStart(isDragging)(e);
+                }
+            });
+        }
+
+        function updateUI() {
+            if (state.powerMode === 'kw') {
+                elements.toggleText.innerText = 'Use Volts/Amps';
+                elements.kwSelector.classList.remove('hidden');
+                elements.vaSelector.classList.add('hidden');
+            } else {
+                elements.toggleText.innerText = 'Use kW Presets';
+                elements.kwSelector.classList.add('hidden');
+                elements.vaSelector.classList.remove('hidden');
+            }
+            updateSliderUI();
+        }
+
+        function updateSliderUI() {
+            elements.currentSoCVal.innerText = state.currentSoC;
+            elements.targetSoCVal.innerText = state.targetSoC;
+
+            elements.handleCurrent.style.left = state.currentSoC + '%';
+            elements.handleTarget.style.left = state.targetSoC + '%';
+
+            elements.sliderFill.style.left = state.currentSoC + '%';
+            elements.sliderFill.style.width = (state.targetSoC - state.currentSoC) + '%';
+        }
+
+        function calculate() {
+            const energyNeeded = ((state.targetSoC - state.currentSoC) / 100) * state.batteryCapacity;
+            
+            let speed = state.chargingSpeed;
+            if (state.powerMode === 'va') {
+                speed = (state.volts * state.amps) / 1000;
+                elements.vaResultKw.innerText = speed.toFixed(2);
             }
 
-            // Calculate the charge required and time to achieve the target charge
-            const requiredChargeKWh = ((desiredCharge - currentCharge) / 100) * batteryCapacity;
-            const hoursRequired = requiredChargeKWh / chargingSpeed;
+            const hoursNeeded = speed > 0 ? energyNeeded / speed : 0;
+            
+            const hours = Math.floor(hoursNeeded);
+            const mins = Math.round((hoursNeeded - hours) * 60);
 
-            // Parse the target time
-            const [targetHour, targetMinute] = chargeByTime.split(":").map(Number);
-            const targetDate = new Date();
-            targetDate.setHours(targetHour, targetMinute, 0, 0);
+            // Time calculation
+            const [depH, depM] = state.departureTime.split(':').map(Number);
+            const depDate = new Date();
+            depDate.setHours(depH, depM, 0, 0);
 
-            // Calculate plug-in time
-            const plugInTime = new Date(targetDate.getTime() - hoursRequired * 60 * 60 * 1000);
+            const plugDate = new Date(depDate.getTime() - hoursNeeded * 60 * 60 * 1000);
+            
+            // Update Results
+            elements.resEnergy.innerText = energyNeeded.toFixed(1);
+            elements.resHours.innerText = hours;
+            elements.resMins.innerText = mins;
 
-            // Format results
-            const hoursRequiredFormatted = hoursRequired.toFixed(2);
-            const plugInTimeFormatted = plugInTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            // Format Departure for display
+            const depLabel = depDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            elements.resDeparture.innerText = depLabel;
 
-            // Display results
-            document.getElementById("totalKwh").innerText = `Kwh: ${requiredChargeKWh.toFixed(2)}`;
-            document.getElementById("hoursRequired").innerText = `Hours Required: ${hoursRequiredFormatted}`;
-            document.getElementById("plugInTime").innerText = `Plug-in Time: ${plugInTimeFormatted}`;
-
-            // Store values in local storage
-            localStorage.setItem("batteryCapacity", batteryCapacity);
-            localStorage.setItem("chargingSpeed", chargingSpeed);
-            localStorage.setItem("currentCharge", currentCharge);
-            localStorage.setItem("desiredCharge", desiredCharge);
-            localStorage.setItem("chargeByTime", chargeByTime);
+            // Format Plug-in Time
+            let plugH = plugDate.getHours();
+            const ampm = plugH >= 12 ? 'PM' : 'AM';
+            plugH = plugH % 12;
+            plugH = plugH ? plugH : 12; // the hour '0' should be '12'
+            const plugM = plugDate.getMinutes().toString().padStart(2, '0');
+            
+            elements.resPlugTime.innerText = `${plugH.toString().padStart(2, '0')}:${plugM}`;
+            elements.resPlugAMPM.innerText = ampm;
         }
+
+        init();
     </script>
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js').then(registration => {
-                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                    console.log('ServiceWorker registration successful');
                 }, err => {
                     console.log('ServiceWorker registration failed: ', err);
                 });
