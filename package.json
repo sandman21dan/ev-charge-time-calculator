@@ -1,0 +1,30 @@
+{
+  "name": "ev-charge-time-calculator",
+  "version": "1.0.0",
+  "description": "**Live Demo**: [https://ev-charge.danielperez.co.uk](ev-charge.danielperez.co.uk)",
+  "source": "index.html",
+  "scripts": {
+    "start": "parcel",
+    "build": "parcel build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sandman21dan/ev-charge-time-calculator.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/sandman21dan/ev-charge-time-calculator/issues"
+  },
+  "homepage": "https://github.com/sandman21dan/ev-charge-time-calculator#readme",
+  "devDependencies": {
+    "@parcel/packager-raw-url": "^2.16.4",
+    "@parcel/transformer-webmanifest": "^2.16.4",
+    "@types/node": "^25.3.3",
+    "parcel": "^2.16.4",
+    "typescript": "^5.9.3"
+  }
+}

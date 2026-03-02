@@ -93,7 +93,7 @@
             <label for="chargeByTime">Charge By Time (HH:MM):</label>
             <input type="time" id="chargeByTime" required>
         </div>
-        <button onclick="calculateCharging()">Calculate</button>
+        <button id="calculateBtn">Calculate</button>
         <div class="results">
             <h2>Results</h2>
             <p id="totalKwh">Kwh: -</p>
@@ -102,70 +102,6 @@
         </div>
     </div>
 
-    <script>
-        // Load stored values on page load
-        document.addEventListener("DOMContentLoaded", () => {
-            if (localStorage.getItem("batteryCapacity")) document.getElementById("batteryCapacity").value = localStorage.getItem("batteryCapacity");
-            if (localStorage.getItem("chargingSpeed")) document.getElementById("chargingSpeed").value = localStorage.getItem("chargingSpeed");
-            if (localStorage.getItem("currentCharge")) document.getElementById("currentCharge").value = localStorage.getItem("currentCharge");
-            if (localStorage.getItem("desiredCharge")) document.getElementById("desiredCharge").value = localStorage.getItem("desiredCharge");
-            if (localStorage.getItem("chargeByTime")) document.getElementById("chargeByTime").value = localStorage.getItem("chargeByTime");
-        });
-
-        // Calculate charging requirements
-        function calculateCharging() {
-            // Gather inputs
-            const batteryCapacity = parseFloat(document.getElementById("batteryCapacity").value);
-            const chargingSpeed = parseFloat(document.getElementById("chargingSpeed").value);
-            const currentCharge = parseFloat(document.getElementById("currentCharge").value);
-            const desiredCharge = parseFloat(document.getElementById("desiredCharge").value);
-            const chargeByTime = document.getElementById("chargeByTime").value;
-
-            // Validate inputs
-            if (isNaN(batteryCapacity) || isNaN(chargingSpeed) || isNaN(currentCharge) || isNaN(desiredCharge) || !chargeByTime) {
-                alert("Please fill out all fields correctly.");
-                return;
-            }
-
-            // Calculate the charge required and time to achieve the target charge
-            const requiredChargeKWh = ((desiredCharge - currentCharge) / 100) * batteryCapacity;
-            const hoursRequired = requiredChargeKWh / chargingSpeed;
-
-            // Parse the target time
-            const [targetHour, targetMinute] = chargeByTime.split(":").map(Number);
-            const targetDate = new Date();
-            targetDate.setHours(targetHour, targetMinute, 0, 0);
-
-            // Calculate plug-in time
-            const plugInTime = new Date(targetDate.getTime() - hoursRequired * 60 * 60 * 1000);
-
-            // Format results
-            const hoursRequiredFormatted = hoursRequired.toFixed(2);
-            const plugInTimeFormatted = plugInTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-            // Display results
-            document.getElementById("totalKwh").innerText = `Kwh: ${requiredChargeKWh.toFixed(2)}`;
-            document.getElementById("hoursRequired").innerText = `Hours Required: ${hoursRequiredFormatted}`;
-            document.getElementById("plugInTime").innerText = `Plug-in Time: ${plugInTimeFormatted}`;
-
-            // Store values in local storage
-            localStorage.setItem("batteryCapacity", batteryCapacity);
-            localStorage.setItem("chargingSpeed", chargingSpeed);
-            localStorage.setItem("currentCharge", currentCharge);
-            localStorage.setItem("desiredCharge", desiredCharge);
-            localStorage.setItem("chargeByTime", chargeByTime);
-        }
-    </script>
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js').then(registration => {
-                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
-                }, err => {
-                    console.log('ServiceWorker registration failed: ', err);
-                });
-            });
-        }
-    </script>
+    <script type="module" src="src/main.ts"></script>
 </body>
 </html>
