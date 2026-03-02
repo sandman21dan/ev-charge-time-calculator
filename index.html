@@ -144,7 +144,7 @@
             const plugInTimeFormatted = plugInTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
             // Display results
-            document.getElementById("totalKwh").innerText = `Kwh: ${requiredChargeKWh}`;
+            document.getElementById("totalKwh").innerText = `Kwh: ${requiredChargeKWh.toFixed(2)}`;
             document.getElementById("hoursRequired").innerText = `Hours Required: ${hoursRequiredFormatted}`;
             document.getElementById("plugInTime").innerText = `Plug-in Time: ${plugInTimeFormatted}`;
 
