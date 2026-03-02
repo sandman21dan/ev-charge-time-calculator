@@ -1,26 +1,15 @@
 /// <reference lib="webworker" />
+import { manifest, version } from '@parcel/service-worker';
 
 const sw = self as unknown as ServiceWorkerGlobalScope;
-
-const CACHE_NAME = 'ev-charge-time-calculator-v4';
-const urlsToCache = [
-    '/',
-    '/index.html',
-    '/favicon-96x96.png',
-    '/favicon.ico',
-    '/apple-touch-icon.png',
-    '/site.webmanifest',
-    '/web-app-manifest-192x192.png',
-    '/web-app-manifest-512x512.png'
-];
 
 sw.addEventListener('install', (event: ExtendableEvent) => {
     sw.skipWaiting();
     event.waitUntil(
-        caches.open(CACHE_NAME)
+        caches.open(version)
             .then(cache => {
-                console.log('Opened cache');
-                return cache.addAll(urlsToCache);
+                console.log('Opened cache', version);
+                return cache.addAll(manifest);
             })
     );
 });
@@ -30,7 +19,7 @@ sw.addEventListener('activate', (event: ExtendableEvent) => {
         caches.keys().then(cacheNames => {
             return Promise.all(
                 cacheNames.map(cacheName => {
-                    if (cacheName !== CACHE_NAME) {
+                    if (cacheName !== version) {
                         console.log('Deleting old cache:', cacheName);
                         return caches.delete(cacheName);
                     }

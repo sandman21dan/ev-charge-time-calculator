@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,10 +17,12 @@
             padding: 20px;
             background-color: #f4f4f4;
         }
+
         h1 {
             color: #333;
             text-align: center;
         }
+
         .container {
             max-width: 400px;
             margin: auto;
@@ -28,23 +31,29 @@
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
+
         .form-group {
             margin-bottom: 15px;
         }
+
         label {
             font-weight: bold;
             display: block;
             margin-bottom: 5px;
             color: #555;
         }
-        input[type="number"], input[type="time"] {
+
+        input[type="number"],
+        input[type="time"] {
             width: 100%;
             padding: 10px;
             border: 1px solid #ddd;
             border-radius: 4px;
             font-size: 16px;
-            box-sizing: border-box; /* Ensures padding is included in the width */
+            box-sizing: border-box;
+            /* Ensures padding is included in the width */
         }
+
         button {
             width: 100%;
             padding: 10px;
@@ -57,12 +66,15 @@
             transition: background-color 0.3s ease;
             margin-top: 10px;
         }
+
         button:hover {
             background-color: #0056b3;
         }
+
         .results {
             margin-top: 20px;
         }
+
         .results p {
             font-size: 18px;
             margin: 10px 0;
@@ -70,6 +82,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <h1>EV Charging Calculator</h1>
@@ -104,4 +117,5 @@
 
     <script type="module" src="src/main.ts"></script>
 </body>
+
 </html>

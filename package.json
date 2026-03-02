@@ -8,6 +8,7 @@
     "build": "parcel build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "browserslist": "> 0.5%, last 2 versions, not dead",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sandman21dan/ev-charge-time-calculator.git"
@@ -26,5 +27,8 @@
     "@types/node": "^25.3.3",
     "parcel": "^2.16.4",
     "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@parcel/service-worker": "^2.16.4"
   }
 }
