@@ -1,0 +1,85 @@
+@use "sass:color";
+
+$font-sans: 'Inter', sans-serif;
+$font-mono: 'JetBrains Mono', monospace;
+
+$radius-lg: 12px;
+$radius-xl: 16px;
+$radius-2xl: 24px;
+
+// Dark Mode (Default)
+$bg-base: #09090b;
+$bg-card: rgba(24, 24, 27, 0.4);
+$bg-card-solid: #18181b;
+$bg-card-hover: rgba(39, 39, 42, 0.8);
+
+$border-light: #27272a;
+$border-focus: #3f3f46;
+
+$text-primary: #f4f4f5;
+$text-secondary: #a1a1aa;
+$text-muted: #52525b;
+
+$accent: #22d3ee;
+$accent-glow: rgba(34, 211, 238, 0.4);
+$accent-bg-subtle: rgba(34, 211, 238, 0.1);
+
+// Light Mode
+$lm-bg-base: #f8fafc;
+$lm-bg-card: rgba(255, 255, 255, 0.8);
+$lm-bg-card-solid: #ffffff;
+$lm-bg-card-hover: rgba(241, 245, 249, 0.8);
+
+$lm-border-light: #e2e8f0;
+$lm-border-focus: #cbd5e1;
+
+$lm-text-primary: #0f172a;
+$lm-text-secondary: #475569;
+$lm-text-muted: #94a3b8;
+
+$lm-accent: #0891b2;
+$lm-accent-glow: rgba(8, 145, 178, 0.2);
+$lm-accent-bg-subtle: rgba(8, 145, 178, 0.05);
+
+:root {
+  --bg-base: #{$bg-base};
+  --bg-card: #{$bg-card};
+  --bg-card-solid: #{$bg-card-solid};
+  --bg-card-hover: #{$bg-card-hover};
+
+  --border-light: #{$border-light};
+  --border-focus: #{$border-focus};
+
+  --text-primary: #{$text-primary};
+  --text-secondary: #{$text-secondary};
+  --text-muted: #{$text-muted};
+
+  --accent: #{$accent};
+  --accent-glow: #{$accent-glow};
+  --accent-bg-subtle: #{$accent-bg-subtle};
+
+  --font-sans: #{$font-sans};
+  --font-mono: #{$font-mono};
+
+  --radius-lg: #{$radius-lg};
+  --radius-xl: #{$radius-xl};
+  --radius-2xl: #{$radius-2xl};
+
+  &.light-mode {
+    --bg-base: #{$lm-bg-base};
+    --bg-card: #{$lm-bg-card};
+    --bg-card-solid: #{$lm-bg-card-solid};
+    --bg-card-hover: #{$lm-bg-card-hover};
+
+    --border-light: #{$lm-border-light};
+    --border-focus: #{$lm-border-focus};
+
+    --text-primary: #{$lm-text-primary};
+    --text-secondary: #{$lm-text-secondary};
+    --text-muted: #{$lm-text-muted};
+
+    --accent: #{$lm-accent};
+    --accent-glow: #{$lm-accent-glow};
+    --accent-bg-subtle: #{$lm-accent-bg-subtle};
+  }
+}

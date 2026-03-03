@@ -15,11 +15,11 @@
 
     <nav class="navbar">
         <div class="nav-content">
-            <div style="display: flex; align-items: center; gap: 12px;">
-                <div style="width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+            <div class="brand">
+                <div class="brand-logo">
                     <img src="assets/logo.svg" />
                 </div>
-                <span style="font-weight: 700; font-size: 1.125rem; letter-spacing: -0.025em;">ChargePlan</span>
+                <span class="brand-name">ChargePlan</span>
             </div>
             <button class="btn-icon" id="themeToggle" title="Toggle Light/Dark Mode">
                 <i class="ph ph-moon" id="themeIcon"></i>
@@ -29,16 +29,16 @@
 
     <main class="main-container">
         
-        <header class="mb-8">
-            <h1 style="font-size: 1.875rem; font-weight: 700; margin-bottom: 8px;">Plan your charge</h1>
-            <p style="color: var(--text-secondary); font-size: 0.875rem;">Set your battery capacity, target SoC, and departure time.</p>
+        <header class="page-header">
+            <h1 class="page-header-title">Plan your charge</h1>
+            <p class="page-header-description">Set your battery capacity, target SoC, and departure time.</p>
         </header>
 
         <div class="layout-grid">
             
-            <div style="display: flex; flex-direction: column; gap: 24px;">
+            <div class="form-column">
                 
-                <section class="card">
+                <section class="card flex-col">
                     <div class="card-header">
                         <i class="ph ph-car-profile"></i> Vehicle Specs
                     </div>
@@ -49,13 +49,13 @@
                             <span class="input-suffix font-mono">kWh</span>
                         </div>
                     </div>
-                    <div class="input-group" style="margin-top: 20px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                            <label style="margin-bottom: 0;">Charging Efficiency</label>
-                            <span class="font-mono" style="color: var(--accent); font-weight: 600;"><span id="efficiencyVal">90</span>%</span>
+                    <div class="input-group">
+                        <div class="input-group-header">
+                            <label>Charging Efficiency</label>
+                            <span class="font-mono input-value"><span id="efficiencyVal">90</span>%</span>
                         </div>
                         <input type="range" id="efficiencySlider" min="80" max="100" value="90" class="efficiency-slider">
-                        <p style="font-size: 0.7rem; color: var(--text-muted); margin-top: 6px;">Accounts for heat loss and conversion (AC to DC).</p>
+                        <p class="input-group-hint">Accounts for heat loss and conversion (AC to DC).</p>
                     </div>
                 </section>
 
@@ -70,8 +70,8 @@
                                 <span class="slider-label-title">Current</span>
                                 <div class="slider-label-value font-mono"><span id="currentSoCVal">20</span><span>%</span></div>
                             </div>
-                            <div class="slider-label-group" style="text-align: right;">
-                                <span class="slider-label-title" style="color: rgba(34,211,238,0.8);">Target</span>
+                            <div class="slider-label-group text-right">
+                                <span class="slider-label-title">Target</span>
                                 <div class="slider-label-value target-val font-mono"><span id="targetSoCVal">80</span><span>%</span></div>
                             </div>
                         </div>
@@ -87,9 +87,9 @@
 
                 <div class="inner-grid">
                     
-                    <section class="card" style="display: flex; flex-direction: column;">
+                    <section class="card flex-col">
                         <div class="power-header">
-                            <div class="card-header" style="margin-bottom: 0;">
+                            <div class="card-header no-margin">
                                 <i class="ph ph-plug"></i> Charge Speed
                             </div>
                             <button class="btn-text" id="togglePowerMode">
@@ -101,11 +101,11 @@
                             <div id="presetContainer" class="radio-grid font-mono">
                                 <!-- Presets injected by JS -->
                             </div>
-                            <div id="voltageInfo" style="margin-top: 12px; font-size: 0.75rem; color: var(--text-muted); display: flex; align-items: center; gap: 4px; padding-left: 4px;">
+                            <div id="voltageInfo" class="info-text">
                                 <i class="ph ph-info"></i>
                                 <span id="voltageText">Suggested Amps are calculated at 230V</span>
                             </div>
-                            <div id="customKwInput" style="display: none; margin-top: 12px;">
+                            <div id="customKwInput" class="custom-kw-input">
                                 <div class="input-wrapper">
                                     <input type="number" id="customKwValue" value="11.0" step="1" class="base-input font-mono">
                                     <span class="input-suffix font-mono">kW</span>
@@ -114,7 +114,7 @@
                         </div>
 
                         <div id="vaSelector" class="hidden">
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                            <div class="grid-cols-2">
                                 <div class="input-group">
                                     <label>Volts</label>
                                     <div class="input-wrapper">
@@ -128,25 +128,25 @@
                                         <input type="number" id="inputAmps" value="16" class="base-input font-mono">
                                         <span class="input-suffix font-mono">A</span>
                                     </div>
-                                    </div>
-                                    </div>
-                                    <div style="margin-top: 16px; text-align: right;">
-                                    <span style="font-size: 0.875rem; color: var(--text-secondary);">Resulting Power:</span>
-                                    <span class="font-mono" style="font-size: 1.125rem; color: var(--accent); margin-left: 8px;">
+                                </div>
+                            </div>
+                            <div class="va-result">
+                                <span class="va-result-label">Resulting Power:</span>
+                                <span class="font-mono va-result-value">
                                     <span id="vaResultKw">3.7</span> kW
-                                    </span>
-                                    </div>
-                                    </div>
-                                    </section>
+                                </span>
+                            </div>
+                        </div>
+                    </section>
 
 
-                    <section class="card" style="display: flex; flex-direction: column;">
+                    <section class="card flex-col">
                         <div class="card-header">
                             <i class="ph ph-clock"></i> Departure Time
                         </div>
-                        <div class="input-group" style="flex-grow: 1; display: flex; flex-direction: column; justify-content: center;">
+                        <div class="input-group flex-grow flex-col justify-center">
                             <label>Car should be ready by</label>
-                            <input type="time" id="departureTime" value="07:00" class="base-input font-mono" style="text-align: center; font-size: 1.5rem; padding: 16px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);">
+                            <input type="time" id="departureTime" value="07:00" class="base-input font-mono time-input">
                         </div>
                     </section>
 
@@ -159,14 +159,14 @@
                     <div class="z-10">
                         <h2 class="summary-title">Calculation Result</h2>
                         
-                        <div style="margin-bottom: 32px;">
+                        <div class="mb-8">
                             <div class="stat-row">
                                 <div class="stat-label">Energy Needed</div>
                                 <div class="stat-value font-mono"><span id="resEnergy">32.4</span> <span class="stat-unit">kWh</span></div>
                             </div>
-                            <div class="stat-row" style="opacity: 0.7; border-bottom-style: dashed; font-size: 0.9em; margin-top: -16px; margin-bottom: 24px;">
-                                <div class="stat-label" style="font-size: 0.85rem;">Total from Wall</div>
-                                <div class="stat-value font-mono" style="font-size: 1.1rem;"><span id="resWallEnergy">36.0</span> <span class="stat-unit">kWh</span></div>
+                            <div class="stat-row secondary">
+                                <div class="stat-label">Total from Wall</div>
+                                <div class="stat-value font-mono"><span id="resWallEnergy">36.0</span> <span class="stat-unit">kWh</span></div>
                             </div>
                             <div class="stat-row">
                                 <div class="stat-label">Charge Duration</div>

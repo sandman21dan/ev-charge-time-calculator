@@ -1,0 +1,25 @@
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  &-logo {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    img {
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  &-name {
+    font-weight: 700;
+    font-size: 1.125rem;
+    letter-spacing: -0.025em;
+  }
+}

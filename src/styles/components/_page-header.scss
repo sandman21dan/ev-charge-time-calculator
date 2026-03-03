@@ -1,0 +1,14 @@
+.page-header {
+  margin-bottom: 32px;
+
+  &-title {
+    font-size: 1.875rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  &-description {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+  }
+}
