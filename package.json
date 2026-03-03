@@ -1,0 +1,33 @@
+{
+  "name": "ev-charge-time-calculator",
+  "version": "1.8.0",
+  "description": "An app to estimate ev charge times to a desired SOC",
+  "homepage": "https://github.com/sandman21dan/ev-charge-time-calculator#readme",
+  "bugs": {
+    "url": "https://github.com/sandman21dan/ev-charge-time-calculator/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sandman21dan/ev-charge-time-calculator.git"
+  },
+  "license": "ISC",
+  "author": "Daniel Perez",
+  "source": "src/index.html",
+  "browserslist": "> 0.5%, last 2 versions, not dead",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "start": "parcel",
+    "build": "parcel build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "@parcel/packager-raw-url": "^2.16.4",
+    "@parcel/transformer-webmanifest": "^2.16.4",
+    "parcel": "latest"
+  },
+  "dependencies": {
+    "@parcel/service-worker": "^2.16.4"
+  }
+}

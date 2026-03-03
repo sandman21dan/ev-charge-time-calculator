@@ -1,22 +1,14 @@
-const CACHE_NAME = 'ev-charge-time-calculator-v8';
-const urlsToCache = [
-    '/',
-    '/index.html',
-    '/favicon-96x96.png',
-    '/favicon.ico',
-    '/apple-touch-icon.png',
-    '/site.webmanifest',
-    '/web-app-manifest-192x192.png',
-    '/web-app-manifest-512x512.png'
-];
+import {manifest, version} from '@parcel/service-worker';
 
 self.addEventListener('install', event => {
     self.skipWaiting();
     event.waitUntil(
-        caches.open(CACHE_NAME)
+        caches.open(version)
             .then(cache => {
                 console.log('Opened cache');
-                return cache.addAll(urlsToCache);
+                console.log('Manifest');
+                console.log(manifest);
+                return cache.addAll(manifest);
             })
     );
 });
@@ -26,7 +18,7 @@ self.addEventListener('activate', event => {
         caches.keys().then(cacheNames => {
             return Promise.all(
                 cacheNames.map(cacheName => {
-                    if (cacheName !== CACHE_NAME) {
+                    if (cacheName !== version) {
                         console.log('Deleting old cache:', cacheName);
                         return caches.delete(cacheName);
                     }
