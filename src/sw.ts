@@ -1,7 +1,9 @@
 import {manifest, version} from '@parcel/service-worker';
 
-self.addEventListener('install', event => {
-    self.skipWaiting();
+const sw = self as unknown as ServiceWorkerGlobalScope;
+
+sw.addEventListener('install', (event: ExtendableEvent) => {
+    sw.skipWaiting();
     event.waitUntil(
         caches.open(version)
             .then(cache => {
@@ -13,7 +15,7 @@ self.addEventListener('install', event => {
     );
 });
 
-self.addEventListener('activate', event => {
+sw.addEventListener('activate', (event: ExtendableEvent) => {
     event.waitUntil(
         caches.keys().then(cacheNames => {
             return Promise.all(
@@ -24,11 +26,11 @@ self.addEventListener('activate', event => {
                     }
                 })
             );
-        }).then(() => self.clients.claim())
+        }).then(() => sw.clients.claim())
     );
 });
 
-self.addEventListener('fetch', event => {
+sw.addEventListener('fetch', (event: FetchEvent) => {
     event.respondWith(
         caches.match(event.request)
             .then(response => {

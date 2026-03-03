@@ -1,6 +1,70 @@
+// Types
+interface Preset {
+    a: number;
+    v?: number;
+    label?: string;
+}
+
+interface Region {
+    name: string;
+    volts: number;
+    presets: Preset[];
+}
+
+interface Regions {
+    [key: string]: Region;
+}
+
+interface State {
+    batteryCapacity: number;
+    currentSoC: number;
+    targetSoC: number;
+    powerMode: 'kw' | 'va';
+    chargingSpeed: number;
+    volts: number;
+    amps: number;
+    departureTime: string;
+    customKw: number;
+    region: string;
+    efficiency: number;
+    theme: 'dark' | 'light';
+}
+
+interface Elements {
+    batteryCapacity: HTMLInputElement;
+    efficiencySlider: HTMLInputElement;
+    efficiencyVal: HTMLElement;
+    currentSoCVal: HTMLElement;
+    targetSoCVal: HTMLElement;
+    socSlider: HTMLElement;
+    handleCurrent: HTMLElement;
+    handleTarget: HTMLElement;
+    sliderFill: HTMLElement;
+    togglePowerMode: HTMLElement;
+    toggleText: HTMLElement;
+    kwSelector: HTMLElement;
+    vaSelector: HTMLElement;
+    presetContainer: HTMLElement;
+    voltageText: HTMLElement;
+    customKwInput: HTMLElement;
+    customKwValue: HTMLInputElement;
+    inputVolts: HTMLInputElement;
+    inputAmps: HTMLInputElement;
+    departureTime: HTMLInputElement;
+    resEnergy: HTMLElement;
+    resWallEnergy: HTMLElement;
+    resHours: HTMLElement;
+    resMins: HTMLElement;
+    resDeparture: HTMLElement;
+    resPlugTime: HTMLElement;
+    resPlugAMPM: HTMLElement;
+    vaResultKw: HTMLElement;
+    themeToggle: HTMLElement;
+    themeIcon: HTMLElement;
+}
 
 // Constants & Presets
-const REGIONS = {
+const REGIONS: Regions = {
     uk: {
         name: 'UK/Ireland',
         volts: 230,
@@ -69,7 +133,7 @@ const REGIONS = {
 };
 
 // State
-let state = {
+let state: State = {
     batteryCapacity: 54,
     currentSoC: 20,
     targetSoC: 80,
@@ -85,37 +149,37 @@ let state = {
 };
 
 // DOM Elements
-const elements = {
-    batteryCapacity: document.getElementById('batteryCapacity'),
-    efficiencySlider: document.getElementById('efficiencySlider'),
-    efficiencyVal: document.getElementById('efficiencyVal'),
-    currentSoCVal: document.getElementById('currentSoCVal'),
-    targetSoCVal: document.getElementById('targetSoCVal'),
-    socSlider: document.getElementById('socSlider'),
-    handleCurrent: document.getElementById('handleCurrent'),
-    handleTarget: document.getElementById('handleTarget'),
-    sliderFill: document.getElementById('sliderFill'),
-    togglePowerMode: document.getElementById('togglePowerMode'),
-    toggleText: document.getElementById('toggleText'),
-    kwSelector: document.getElementById('kwSelector'),
-    vaSelector: document.getElementById('vaSelector'),
-    presetContainer: document.getElementById('presetContainer'),
-    voltageText: document.getElementById('voltageText'),
-    customKwInput: document.getElementById('customKwInput'),
-    customKwValue: document.getElementById('customKwValue'),
-    inputVolts: document.getElementById('inputVolts'),
-    inputAmps: document.getElementById('inputAmps'),
-    departureTime: document.getElementById('departureTime'),
-    resEnergy: document.getElementById('resEnergy'),
-    resWallEnergy: document.getElementById('resWallEnergy'),
-    resHours: document.getElementById('resHours'),
-    resMins: document.getElementById('resMins'),
-    resDeparture: document.getElementById('resDeparture'),
-    resPlugTime: document.getElementById('resPlugTime'),
-    resPlugAMPM: document.getElementById('resPlugAMPM'),
-    vaResultKw: document.getElementById('vaResultKw'),
-    themeToggle: document.getElementById('themeToggle'),
-    themeIcon: document.getElementById('themeIcon')
+const elements: Elements = {
+    batteryCapacity: document.getElementById('batteryCapacity') as HTMLInputElement,
+    efficiencySlider: document.getElementById('efficiencySlider') as HTMLInputElement,
+    efficiencyVal: document.getElementById('efficiencyVal') as HTMLElement,
+    currentSoCVal: document.getElementById('currentSoCVal') as HTMLElement,
+    targetSoCVal: document.getElementById('targetSoCVal') as HTMLElement,
+    socSlider: document.getElementById('socSlider') as HTMLElement,
+    handleCurrent: document.getElementById('handleCurrent') as HTMLElement,
+    handleTarget: document.getElementById('handleTarget') as HTMLElement,
+    sliderFill: document.getElementById('sliderFill') as HTMLElement,
+    togglePowerMode: document.getElementById('togglePowerMode') as HTMLElement,
+    toggleText: document.getElementById('toggleText') as HTMLElement,
+    kwSelector: document.getElementById('kwSelector') as HTMLElement,
+    vaSelector: document.getElementById('vaSelector') as HTMLElement,
+    presetContainer: document.getElementById('presetContainer') as HTMLElement,
+    voltageText: document.getElementById('voltageText') as HTMLElement,
+    customKwInput: document.getElementById('customKwInput') as HTMLElement,
+    customKwValue: document.getElementById('customKwValue') as HTMLInputElement,
+    inputVolts: document.getElementById('inputVolts') as HTMLInputElement,
+    inputAmps: document.getElementById('inputAmps') as HTMLInputElement,
+    departureTime: document.getElementById('departureTime') as HTMLInputElement,
+    resEnergy: document.getElementById('resEnergy') as HTMLElement,
+    resWallEnergy: document.getElementById('resWallEnergy') as HTMLElement,
+    resHours: document.getElementById('resHours') as HTMLElement,
+    resMins: document.getElementById('resMins') as HTMLElement,
+    resDeparture: document.getElementById('resDeparture') as HTMLElement,
+    resPlugTime: document.getElementById('resPlugTime') as HTMLElement,
+    resPlugAMPM: document.getElementById('resPlugAMPM') as HTMLElement,
+    vaResultKw: document.getElementById('vaResultKw') as HTMLElement,
+    themeToggle: document.getElementById('themeToggle') as HTMLElement,
+    themeIcon: document.getElementById('themeIcon') as HTMLElement
 };
 
 // Initialize
@@ -180,7 +244,7 @@ function renderPresets() {
     elements.voltageText.innerText = `Suggested Amps are calculated at ${region.volts}V`;
 
     let html = '';
-    region.presets.forEach((p, idx) => {
+    region.presets.forEach((p) => {
         const volts = p.v || region.volts;
         const kw = (volts * p.a) / 1000;
         const isChecked = state.chargingSpeed === kw;
@@ -213,12 +277,13 @@ function renderPresets() {
     // Re-attach listeners for newly created elements
     document.querySelectorAll('input[name="speed"]').forEach(r => {
         r.addEventListener('change', (e) => {
-            if (e.target.value === 'custom') {
+            const target = e.target as HTMLInputElement;
+            if (target.value === 'custom') {
                 elements.customKwInput.style.display = 'block';
                 state.chargingSpeed = parseFloat(elements.customKwValue.value) || 0;
             } else {
                 elements.customKwInput.style.display = 'none';
-                state.chargingSpeed = parseFloat(e.target.value);
+                state.chargingSpeed = parseFloat(target.value);
             }
             calculate();
             saveState();
@@ -250,13 +315,13 @@ function loadState() {
     }
 
     // Sync inputs with state
-    elements.batteryCapacity.value = state.batteryCapacity;
-    elements.efficiencySlider.value = state.efficiency;
-    elements.efficiencyVal.innerText = state.efficiency;
+    elements.batteryCapacity.value = state.batteryCapacity.toString();
+    elements.efficiencySlider.value = state.efficiency.toString();
+    elements.efficiencyVal.innerText = state.efficiency.toString();
     elements.departureTime.value = state.departureTime;
-    elements.customKwValue.value = state.customKw;
-    elements.inputVolts.value = state.volts;
-    elements.inputAmps.value = state.amps;
+    elements.customKwValue.value = state.customKw.toString();
+    elements.inputVolts.value = state.volts.toString();
+    elements.inputAmps.value = state.amps.toString();
 }
 
 function saveState() {
@@ -271,20 +336,23 @@ function setupEventListeners() {
     });
 
     elements.batteryCapacity.addEventListener('input', (e) => {
-        state.batteryCapacity = parseFloat(e.target.value) || 0;
+        const target = e.target as HTMLInputElement;
+        state.batteryCapacity = parseFloat(target.value) || 0;
         calculate();
         saveState();
     });
 
     elements.efficiencySlider.addEventListener('input', (e) => {
-        state.efficiency = parseInt(e.target.value) || 90;
-        elements.efficiencyVal.innerText = state.efficiency;
+        const target = e.target as HTMLInputElement;
+        state.efficiency = parseInt(target.value) || 90;
+        elements.efficiencyVal.innerText = state.efficiency.toString();
         calculate();
         saveState();
     });
 
     elements.departureTime.addEventListener('input', (e) => {
-        state.departureTime = e.target.value;
+        const target = e.target as HTMLInputElement;
+        state.departureTime = target.value;
         calculate();
         saveState();
     });
@@ -296,35 +364,24 @@ function setupEventListeners() {
         saveState();
     });
 
-    document.querySelectorAll('input[name="speed"]').forEach(r => {
-        r.addEventListener('change', (e) => {
-            if (e.target.value === 'custom') {
-                elements.customKwInput.style.display = 'block';
-                state.chargingSpeed = parseFloat(elements.customKwValue.value) || 0;
-            } else {
-                elements.customKwInput.style.display = 'none';
-                state.chargingSpeed = parseFloat(e.target.value);
-            }
-            calculate();
-            saveState();
-        });
-    });
-
     elements.customKwValue.addEventListener('input', (e) => {
-        state.customKw = parseFloat(e.target.value) || 0;
+        const target = e.target as HTMLInputElement;
+        state.customKw = parseFloat(target.value) || 0;
         state.chargingSpeed = state.customKw;
         calculate();
         saveState();
     });
 
     elements.inputVolts.addEventListener('input', (e) => {
-        state.volts = parseFloat(e.target.value) || 0;
+        const target = e.target as HTMLInputElement;
+        state.volts = parseFloat(target.value) || 0;
         calculate();
         saveState();
     });
 
     elements.inputAmps.addEventListener('input', (e) => {
-        state.amps = parseFloat(e.target.value) || 0;
+        const target = e.target as HTMLInputElement;
+        state.amps = parseFloat(target.value) || 0;
         calculate();
         saveState();
     });
@@ -334,11 +391,18 @@ function setupEventListeners() {
 }
 
 function setupSlider() {
-    let isDragging = null;
+    let isDragging: 'current' | 'target' | null = null;
 
-    const updateFromPointer = (e) => {
+    const updateFromPointer = (e: MouseEvent | TouchEvent) => {
         const rect = elements.socSlider.getBoundingClientRect();
-        const x = (e.clientX || (e.touches && e.touches[0].clientX)) - rect.left;
+        let clientX: number;
+        if ('touches' in e) {
+            clientX = e.touches[0].clientX;
+        } else {
+            clientX = e.clientX;
+        }
+        
+        const x = clientX - rect.left;
         let percent = Math.round((x / rect.width) * 100);
         percent = Math.max(0, Math.min(100, percent));
 
@@ -353,7 +417,7 @@ function setupSlider() {
         saveState();
     };
 
-    const onStart = (type) => (e) => {
+    const onStart = (type: 'current' | 'target') => (e: MouseEvent | TouchEvent) => {
         isDragging = type;
         document.addEventListener('mousemove', updateFromPointer);
         document.addEventListener('mouseup', onEnd);
@@ -370,13 +434,13 @@ function setupSlider() {
         document.removeEventListener('touchend', onEnd);
     };
 
-    elements.handleCurrent.addEventListener('mousedown', onStart('current'));
-    elements.handleCurrent.addEventListener('touchstart', onStart('current'));
-    elements.handleTarget.addEventListener('mousedown', onStart('target'));
-    elements.handleTarget.addEventListener('touchstart', onStart('target'));
+    elements.handleCurrent.addEventListener('mousedown', onStart('current') as EventListener);
+    elements.handleCurrent.addEventListener('touchstart', onStart('current') as EventListener);
+    elements.handleTarget.addEventListener('mousedown', onStart('target') as EventListener);
+    elements.handleTarget.addEventListener('touchstart', onStart('target') as EventListener);
 
     // Click on track to jump
-    elements.socSlider.addEventListener('mousedown', (e) => {
+    elements.socSlider.addEventListener('mousedown', (e: MouseEvent) => {
         if (e.target !== elements.handleCurrent && e.target !== elements.handleTarget) {
             const rect = elements.socSlider.getBoundingClientRect();
             const x = e.clientX - rect.left;
@@ -412,8 +476,8 @@ function updateUI() {
 }
 
 function updateSliderUI() {
-    elements.currentSoCVal.innerText = state.currentSoC;
-    elements.targetSoCVal.innerText = state.targetSoC;
+    elements.currentSoCVal.innerText = state.currentSoC.toString();
+    elements.targetSoCVal.innerText = state.targetSoC.toString();
 
     elements.handleCurrent.style.left = state.currentSoC + '%';
     elements.handleTarget.style.left = state.targetSoC + '%';
@@ -450,8 +514,8 @@ function calculate() {
     // Update Results
     elements.resEnergy.innerText = energyNeeded.toFixed(1);
     elements.resWallEnergy.innerText = energyFromWall.toFixed(1);
-    elements.resHours.innerText = hours;
-    elements.resMins.innerText = mins;
+    elements.resHours.innerText = hours.toString();
+    elements.resMins.innerText = mins.toString();
 
     // Format Departure for display
     const depLabel = depDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
