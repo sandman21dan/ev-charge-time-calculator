@@ -451,67 +451,12 @@
                         </div>
                         
                         <div id="kwSelector">
-                            <div class="radio-grid font-mono">
-                                <label class="radio-item">
-                                    <input type="radio" name="speed" value="1.38">
-                                    <div class="radio-box">
-                                        <span class="radio-val">1.38</span>
-                                        <span class="radio-sub"><i class="ph-fill ph-lightning" style="font-size: 8px;"></i> 6A</span>
-                                    </div>
-                                </label>
-                                <label class="radio-item">
-                                    <input type="radio" name="speed" value="1.84">
-                                    <div class="radio-box">
-                                        <span class="radio-val">1.84</span>
-                                        <span class="radio-sub"><i class="ph-fill ph-lightning" style="font-size: 8px;"></i> 8A</span>
-                                    </div>
-                                </label>
-                                <label class="radio-item">
-                                    <input type="radio" name="speed" value="2.3">
-                                    <div class="radio-box">
-                                        <span class="radio-val">2.3</span>
-                                        <span class="radio-sub"><i class="ph-fill ph-lightning" style="font-size: 8px;"></i> 10A</span>
-                                    </div>
-                                </label>
-                                <label class="radio-item">
-                                    <input type="radio" name="speed" value="3.0">
-                                    <div class="radio-box">
-                                        <span class="radio-val">3.0</span>
-                                        <span class="radio-sub"><i class="ph-fill ph-lightning" style="font-size: 8px;"></i> 13A</span>
-                                    </div>
-                                </label>
-                                <label class="radio-item">
-                                    <input type="radio" name="speed" value="3.68">
-                                    <div class="radio-box">
-                                        <span class="radio-val">3.68</span>
-                                        <span class="radio-sub"><i class="ph-fill ph-lightning" style="font-size: 8px;"></i> 16A</span>
-                                    </div>
-                                </label>
-                                <label class="radio-item">
-                                    <input type="radio" name="speed" value="5.0">
-                                    <div class="radio-box">
-                                        <span class="radio-val">5.0</span>
-                                        <span class="radio-sub"><i class="ph-fill ph-lightning" style="font-size: 8px;"></i> 20A</span>
-                                    </div>
-                                </label>
-                                <label class="radio-item">
-                                    <input type="radio" name="speed" value="7.4" checked>
-                                    <div class="radio-box">
-                                        <span class="radio-val">7.4</span>
-                                        <span class="radio-sub"><i class="ph-fill ph-lightning" style="font-size: 8px;"></i> 32A</span>
-                                    </div>
-                                </label>
-                                <label class="radio-item col-span-2">
-                                    <input type="radio" name="speed" value="custom" id="speedCustom">
-                                    <div class="radio-box custom-box font-sans">
-                                        <i class="ph ph-faders"></i>
-                                        <span class="radio-val" style="font-size: 0.75rem; font-weight: 500;">Custom kW</span>
-                                    </div>
-                                </label>
+                            <div id="presetContainer" class="radio-grid font-mono">
+                                <!-- Presets injected by JS -->
                             </div>
-                            <div style="margin-top: 12px; font-size: 0.75rem; color: var(--text-muted); display: flex; align-items: center; gap: 4px; padding-left: 4px;">
+                            <div id="voltageInfo" style="margin-top: 12px; font-size: 0.75rem; color: var(--text-muted); display: flex; align-items: center; gap: 4px; padding-left: 4px;">
                                 <i class="ph ph-info"></i>
-                                <span>Suggested Amps are calculated at 230V</span>
+                                <span id="voltageText">Suggested Amps are calculated at 230V</span>
                             </div>
                             <div id="customKwInput" style="display: none; margin-top: 12px;">
                                 <div class="input-wrapper">
@@ -594,6 +539,75 @@
     </main>
 
     <script>
+        // Constants & Presets
+        const REGIONS = {
+            uk: {
+                name: 'UK/Ireland',
+                volts: 230,
+                presets: [
+                    { a: 6 }, { a: 8 }, { a: 10 }, { a: 13, label: 'UK Socket' },
+                    { a: 16 }, { a: 32, label: 'Wallbox' }
+                ]
+            },
+            eu: {
+                name: 'Europe',
+                volts: 230,
+                presets: [
+                    { a: 6 }, { a: 8 }, { a: 10 }, { a: 16, label: 'Standard' },
+                    { a: 20 }, { a: 32, label: 'Wallbox' }
+                ]
+            },
+            na: {
+                name: 'North America',
+                volts: 120,
+                presets: [
+                    { a: 12, v: 120, label: 'L1 Household' },
+                    { a: 16, v: 240, label: 'L2 16A' },
+                    { a: 24, v: 240, label: 'L2 24A' },
+                    { a: 32, v: 240, label: 'L2 32A' },
+                    { a: 40, v: 240, label: 'L2 40A' },
+                    { a: 48, v: 240, label: 'L2 48A' }
+                ]
+            },
+            au: {
+                name: 'Australia/NZ',
+                volts: 230,
+                presets: [
+                    { a: 6 }, { a: 10, label: 'AU Socket' }, { a: 15 },
+                    { a: 32, label: 'Wallbox' }
+                ]
+            },
+            sa_low: {
+                name: 'South America (120V)',
+                volts: 120,
+                presets: [
+                    { a: 12, v: 120, label: 'Household' },
+                    { a: 16, v: 240 }, { a: 32, v: 240 }
+                ]
+            },
+            sa_high: {
+                name: 'South America (220V)',
+                volts: 220,
+                presets: [
+                    { a: 10 }, { a: 16 }, { a: 32 }
+                ]
+            },
+            jp: {
+                name: 'Japan',
+                volts: 100,
+                presets: [
+                    { a: 15, v: 100 }, { a: 16, v: 200 }, { a: 30, v: 200 }
+                ]
+            },
+            cn: {
+                name: 'China',
+                volts: 220,
+                presets: [
+                    { a: 8 }, { a: 10 }, { a: 13 }, { a: 16 }, { a: 32 }
+                ]
+            }
+        };
+
         // State
         let state = {
             batteryCapacity: 54,
@@ -604,7 +618,8 @@
             volts: 230,
             amps: 16,
             departureTime: '07:00',
-            customKw: 11.0
+            customKw: 11.0,
+            region: 'uk'
         };
 
         // DOM Elements
@@ -620,6 +635,8 @@
             toggleText: document.getElementById('toggleText'),
             kwSelector: document.getElementById('kwSelector'),
             vaSelector: document.getElementById('vaSelector'),
+            presetContainer: document.getElementById('presetContainer'),
+            voltageText: document.getElementById('voltageText'),
             customKwInput: document.getElementById('customKwInput'),
             customKwValue: document.getElementById('customKwValue'),
             inputVolts: document.getElementById('inputVolts'),
@@ -636,10 +653,102 @@
 
         // Initialize
         function init() {
-            loadState();
+            detectRegion();
+            loadState(); // This might override the detected region if saved
+            
+            // Set default volts from region if not already set (e.g. first run)
+            if (!localStorage.getItem('ev_planner_state')) {
+                state.volts = REGIONS[state.region].volts;
+            }
+            
+            renderPresets();
             setupEventListeners();
             updateUI();
             calculate();
+        }
+
+        function detectRegion() {
+            const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            const lang = navigator.language.toLowerCase();
+            
+            if (tz.includes('America')) {
+                // Split South America
+                const saHighCities = ['Santiago', 'Buenos_Aires', 'Montevideo', 'Lima', 'Asuncion'];
+                if (saHighCities.some(city => tz.includes(city))) {
+                    state.region = 'sa_high';
+                } else if (tz.includes('Sao_Paulo')) {
+                    state.region = 'sa_low'; // Brazil is mixed, but 127V is common
+                } else if (tz.includes('Bogota') || tz.includes('Caracas') || tz.includes('Guayaquil')) {
+                    state.region = 'sa_low';
+                } else {
+                    state.region = 'na';
+                }
+            } else if (tz.includes('London') || tz.includes('Dublin') || lang.includes('en-gb')) {
+                state.region = 'uk';
+            } else if (tz.includes('Sydney') || tz.includes('Melbourne') || tz.includes('Auckland') || tz.includes('Perth')) {
+                state.region = 'au';
+            } else if (tz.includes('Tokyo') || tz.includes('Seoul')) {
+                state.region = 'jp';
+            } else if (tz.includes('Shanghai') || tz.includes('Hong_Kong') || tz.includes('Chongqing')) {
+                state.region = 'cn';
+            } else {
+                state.region = 'eu';
+            }
+        }
+
+        function renderPresets() {
+            const region = REGIONS[state.region];
+            elements.voltageText.innerText = `Suggested Amps are calculated at ${region.volts}V`;
+            
+            let html = '';
+            region.presets.forEach((p, idx) => {
+                const volts = p.v || region.volts;
+                const kw = (volts * p.a) / 1000;
+                const isChecked = state.chargingSpeed === kw;
+                
+                html += `
+                    <label class="radio-item">
+                        <input type="radio" name="speed" value="${kw}" ${isChecked ? 'checked' : ''}>
+                        <div class="radio-box">
+                            <span class="radio-val">${kw.toFixed(1)}</span>
+                            <span class="radio-sub"><i class="ph-fill ph-lightning" style="font-size: 8px;"></i> ${p.a}A</span>
+                        </div>
+                    </label>
+                `;
+            });
+
+            // Add Custom Option
+            const isCustom = !region.presets.some(p => ((p.v || region.volts) * p.a / 1000) === state.chargingSpeed);
+            html += `
+                <label class="radio-item col-span-2">
+                    <input type="radio" name="speed" value="custom" id="speedCustom" ${isCustom ? 'checked' : ''}>
+                    <div class="radio-box custom-box font-sans">
+                        <i class="ph ph-faders"></i>
+                        <span class="radio-val" style="font-size: 0.75rem; font-weight: 500;">Custom kW</span>
+                    </div>
+                </label>
+            `;
+
+            elements.presetContainer.innerHTML = html;
+            
+            // Re-attach listeners for newly created elements
+            document.querySelectorAll('input[name="speed"]').forEach(r => {
+                r.addEventListener('change', (e) => {
+                    if (e.target.value === 'custom') {
+                        elements.customKwInput.style.display = 'block';
+                        state.chargingSpeed = parseFloat(elements.customKwValue.value) || 0;
+                    } else {
+                        elements.customKwInput.style.display = 'none';
+                        state.chargingSpeed = parseFloat(e.target.value);
+                    }
+                    calculate();
+                    saveState();
+                });
+            });
+
+            if (isCustom && state.powerMode === 'kw') {
+                elements.customKwInput.style.display = 'block';
+            }
         }
 
         function loadState() {
@@ -667,20 +776,6 @@
             elements.customKwValue.value = state.customKw;
             elements.inputVolts.value = state.volts;
             elements.inputAmps.value = state.amps;
-            
-            // Sync radios
-            const radios = document.querySelectorAll('input[name="speed"]');
-            let matched = false;
-            radios.forEach(r => {
-                if (parseFloat(r.value) == state.chargingSpeed) {
-                    r.checked = true;
-                    matched = true;
-                }
-            });
-            if (!matched && state.powerMode === 'kw') {
-                document.getElementById('speedCustom').checked = true;
-                elements.customKwInput.style.display = 'block';
-            }
         }
 
         function saveState() {
