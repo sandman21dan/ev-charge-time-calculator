@@ -8,8 +8,6 @@ sw.addEventListener('install', (event: ExtendableEvent) => {
         caches.open(version)
             .then(cache => {
                 console.log('Opened cache');
-                console.log('Manifest');
-                console.log(manifest);
                 return cache.addAll(manifest);
             })
     );
