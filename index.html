@@ -373,6 +373,39 @@
         /* Utilities */
         .mb-8 { margin-bottom: 32px; }
         .z-10 { position: relative; z-index: 10; }
+
+        /* Efficiency Slider */
+        .efficiency-slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 8px;
+            background: var(--bg-base);
+            border: 1px solid var(--border-light);
+            border-radius: 999px;
+            outline: none;
+        }
+
+        .efficiency-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--bg-card-solid);
+            border: 3px solid var(--accent);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        .efficiency-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: var(--bg-card-solid);
+            border: 3px solid var(--accent);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
     </style>
 </head>
 <body>
@@ -409,6 +442,14 @@
                             <input type="number" id="batteryCapacity" value="54.0" step="1" class="base-input font-mono">
                             <span class="input-suffix font-mono">kWh</span>
                         </div>
+                    </div>
+                    <div class="input-group" style="margin-top: 20px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <label style="margin-bottom: 0;">Charging Efficiency</label>
+                            <span class="font-mono" style="color: var(--accent); font-weight: 600;"><span id="efficiencyVal">90</span>%</span>
+                        </div>
+                        <input type="range" id="efficiencySlider" min="80" max="100" value="90" class="efficiency-slider">
+                        <p style="font-size: 0.7rem; color: var(--text-muted); margin-top: 6px;">Accounts for heat loss and conversion (AC to DC).</p>
                     </div>
                 </section>
 
@@ -498,7 +539,7 @@
                             <i class="ph ph-clock"></i> Departure Time
                         </div>
                         <div class="input-group" style="flex-grow: 1; display: flex; flex-direction: column; justify-content: center;">
-                            <label>Car must be ready by</label>
+                            <label>Car should be ready by</label>
                             <input type="time" id="departureTime" value="07:00" class="base-input font-mono" style="text-align: center; font-size: 1.5rem; padding: 16px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);">
                         </div>
                     </section>
@@ -516,6 +557,10 @@
                             <div class="stat-row">
                                 <div class="stat-label">Energy Needed</div>
                                 <div class="stat-value font-mono"><span id="resEnergy">32.4</span> <span class="stat-unit">kWh</span></div>
+                            </div>
+                            <div class="stat-row" style="opacity: 0.7; border-bottom-style: dashed; font-size: 0.9em; margin-top: -16px; margin-bottom: 24px;">
+                                <div class="stat-label" style="font-size: 0.85rem;">Total from Wall</div>
+                                <div class="stat-value font-mono" style="font-size: 1.1rem;"><span id="resWallEnergy">36.0</span> <span class="stat-unit">kWh</span></div>
                             </div>
                             <div class="stat-row">
                                 <div class="stat-label">Charge Duration</div>
@@ -619,12 +664,15 @@
             amps: 16,
             departureTime: '07:00',
             customKw: 11.0,
-            region: 'uk'
+            region: 'uk',
+            efficiency: 90
         };
 
         // DOM Elements
         const elements = {
             batteryCapacity: document.getElementById('batteryCapacity'),
+            efficiencySlider: document.getElementById('efficiencySlider'),
+            efficiencyVal: document.getElementById('efficiencyVal'),
             currentSoCVal: document.getElementById('currentSoCVal'),
             targetSoCVal: document.getElementById('targetSoCVal'),
             socSlider: document.getElementById('socSlider'),
@@ -643,6 +691,7 @@
             inputAmps: document.getElementById('inputAmps'),
             departureTime: document.getElementById('departureTime'),
             resEnergy: document.getElementById('resEnergy'),
+            resWallEnergy: document.getElementById('resWallEnergy'),
             resHours: document.getElementById('resHours'),
             resMins: document.getElementById('resMins'),
             resDeparture: document.getElementById('resDeparture'),
@@ -772,6 +821,8 @@
             
             // Sync inputs with state
             elements.batteryCapacity.value = state.batteryCapacity;
+            elements.efficiencySlider.value = state.efficiency;
+            elements.efficiencyVal.innerText = state.efficiency;
             elements.departureTime.value = state.departureTime;
             elements.customKwValue.value = state.customKw;
             elements.inputVolts.value = state.volts;
@@ -785,6 +836,13 @@
         function setupEventListeners() {
             elements.batteryCapacity.addEventListener('input', (e) => {
                 state.batteryCapacity = parseFloat(e.target.value) || 0;
+                calculate();
+                saveState();
+            });
+
+            elements.efficiencySlider.addEventListener('input', (e) => {
+                state.efficiency = parseInt(e.target.value) || 90;
+                elements.efficiencyVal.innerText = state.efficiency;
                 calculate();
                 saveState();
             });
@@ -937,7 +995,11 @@
                 elements.vaResultKw.innerText = speed.toFixed(2);
             }
 
-            const hoursNeeded = speed > 0 ? energyNeeded / speed : 0;
+            const efficiencyFactor = state.efficiency / 100;
+            const effectiveSpeed = speed * efficiencyFactor;
+            const energyFromWall = energyNeeded / efficiencyFactor;
+
+            const hoursNeeded = effectiveSpeed > 0 ? energyNeeded / effectiveSpeed : 0;
             
             const hours = Math.floor(hoursNeeded);
             const mins = Math.round((hoursNeeded - hours) * 60);
@@ -951,6 +1013,7 @@
             
             // Update Results
             elements.resEnergy.innerText = energyNeeded.toFixed(1);
+            elements.resWallEnergy.innerText = energyFromWall.toFixed(1);
             elements.resHours.innerText = hours;
             elements.resMins.innerText = mins;
 
