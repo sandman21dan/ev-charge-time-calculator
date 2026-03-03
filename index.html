@@ -40,6 +40,24 @@
             --radius-2xl: 24px;
         }
 
+        :root.light-mode {
+            --bg-base: #f8fafc;
+            --bg-card: rgba(255, 255, 255, 0.8);
+            --bg-card-solid: #ffffff;
+            --bg-card-hover: rgba(241, 245, 249, 0.8);
+            
+            --border-light: #e2e8f0;
+            --border-focus: #cbd5e1;
+            
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            
+            --accent: #0891b2;
+            --accent-glow: rgba(8, 145, 178, 0.2);
+            --accent-bg-subtle: rgba(8, 145, 178, 0.05);
+        }
+
         /* ==========================================================================
            2. Base Resets & Global Styles
            ========================================================================== */
@@ -59,6 +77,7 @@
             display: flex;
             flex-direction: column;
             -webkit-font-smoothing: antialiased;
+            transition: background-color 0.3s, color 0.3s;
         }
 
         ::-webkit-scrollbar { width: 8px; }
@@ -72,8 +91,8 @@
            3. Layout & Structure
            ========================================================================== */
         .navbar {
-            border-bottom: 1px solid rgba(39, 39, 42, 0.8);
-            background: rgba(9, 9, 11, 0.5);
+            border-bottom: 1px solid var(--border-light);
+            background: var(--bg-card);
             backdrop-filter: blur(12px);
             position: sticky;
             top: 0;
@@ -88,6 +107,28 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+        }
+
+        .btn-icon {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px;
+            border-radius: 8px;
+            transition: background 0.2s, color 0.2s;
+        }
+        .btn-icon:hover {
+            background: var(--bg-card-hover);
+        }
+
+        :root.light-mode input[type="time"]::-webkit-calendar-picker-indicator {
+            filter: none;
+            opacity: 0.6;
         }
 
         .main-container {
@@ -162,7 +203,7 @@
 
         .base-input {
             width: 100%;
-            background: rgba(9, 9, 11, 0.5);
+            background: var(--bg-base);
             border: 1px solid var(--border-light);
             border-radius: var(--radius-xl);
             padding: 12px 16px;
@@ -242,7 +283,7 @@
         .slider-fill {
             position: absolute;
             height: 100%;
-            background: linear-gradient(to right, #3f3f46, var(--accent));
+            background: linear-gradient(to right, var(--border-focus), var(--accent));
             border-radius: 999px;
             opacity: 0.8;
         }
@@ -265,7 +306,7 @@
         .handle-current:hover { border-color: var(--text-primary); }
         
         .handle-target { border-color: var(--accent); box-shadow: 0 0 15px var(--accent-glow); }
-        .handle-target:hover { background: #083344; }
+        .handle-target:hover { background: var(--bg-card-hover); }
 
         /* Power Grid (Radios) */
         .power-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
@@ -288,7 +329,7 @@
             justify-content: center;
             height: 100%;
             padding: 8px;
-            background: rgba(9, 9, 11, 0.5);
+            background: var(--bg-base);
             border: 1px solid var(--border-light);
             border-radius: var(--radius-lg);
             transition: all 0.2s;
@@ -313,9 +354,9 @@
 
         /* Summary Card */
         .summary-card {
-            background: rgba(24, 24, 27, 0.8);
+            background: var(--bg-card);
             backdrop-filter: blur(16px);
-            border: 1px solid rgba(39, 39, 42, 0.8);
+            border: 1px solid var(--border-light);
             box-shadow: 0 20px 40px -15px rgba(0,0,0,0.5);
             overflow: hidden;
         }
@@ -337,23 +378,23 @@
         .stat-unit { font-size: 0.875rem; color: var(--text-secondary); }
 
         .final-action {
-            background: rgba(8, 51, 68, 0.3);
-            border: 1px solid rgba(34, 211, 238, 0.3);
+            background: var(--accent-bg-subtle);
+            border: 1px solid var(--accent-glow);
             border-radius: var(--radius-xl);
             padding: 24px;
             text-align: center;
-            box-shadow: 0 0 30px rgba(34, 211, 238, 0.1);
+            box-shadow: 0 0 30px var(--accent-glow);
         }
 
-        .final-hint { font-size: 0.875rem; color: rgba(34, 211, 238, 0.8); margin-bottom: 8px; font-weight: 500;}
-        .final-label { color: rgba(212, 212, 216, 1); font-size: 1.125rem; margin-bottom: 4px; }
+        .final-hint { font-size: 0.875rem; color: var(--accent); margin-bottom: 8px; font-weight: 500;}
+        .final-label { color: var(--text-primary); font-size: 1.125rem; margin-bottom: 4px; }
         .final-time {
             font-size: 3rem;
             font-weight: 700;
             color: var(--accent);
-            text-shadow: 0 0 10px rgba(34, 211, 238, 0.3);
+            text-shadow: 0 0 10px var(--accent-glow);
         }
-        .final-ampm { font-size: 1.25rem; color: rgba(34, 211, 238, 0.6); font-weight: 500; }
+        .final-ampm { font-size: 1.25rem; color: var(--text-secondary); font-weight: 500; }
 
         /* Custom Input Section */
         #customPowerInputs {
@@ -418,6 +459,9 @@
                 </div>
                 <span style="font-weight: 700; font-size: 1.125rem; letter-spacing: -0.025em;">ChargePlan</span>
             </div>
+            <button class="btn-icon" id="themeToggle" title="Toggle Light/Dark Mode">
+                <i class="ph ph-moon" id="themeIcon"></i>
+            </button>
         </div>
     </nav>
 
@@ -665,7 +709,8 @@
             departureTime: '07:00',
             customKw: 11.0,
             region: 'uk',
-            efficiency: 90
+            efficiency: 90,
+            theme: 'dark'
         };
 
         // DOM Elements
@@ -697,13 +742,16 @@
             resDeparture: document.getElementById('resDeparture'),
             resPlugTime: document.getElementById('resPlugTime'),
             resPlugAMPM: document.getElementById('resPlugAMPM'),
-            vaResultKw: document.getElementById('vaResultKw')
+            vaResultKw: document.getElementById('vaResultKw'),
+            themeToggle: document.getElementById('themeToggle'),
+            themeIcon: document.getElementById('themeIcon')
         };
 
         // Initialize
         function init() {
             detectRegion();
             loadState(); // This might override the detected region if saved
+            applyTheme();
             
             // Set default volts from region if not already set (e.g. first run)
             if (!localStorage.getItem('ev_planner_state')) {
@@ -714,6 +762,17 @@
             setupEventListeners();
             updateUI();
             calculate();
+        }
+
+        function applyTheme() {
+            const root = document.documentElement;
+            if (state.theme === 'light') {
+                root.classList.add('light-mode');
+                elements.themeIcon.className = 'ph ph-sun';
+            } else {
+                root.classList.remove('light-mode');
+                elements.themeIcon.className = 'ph ph-moon';
+            }
         }
 
         function detectRegion() {
@@ -834,6 +893,12 @@
         }
 
         function setupEventListeners() {
+            elements.themeToggle.addEventListener('click', () => {
+                state.theme = state.theme === 'dark' ? 'light' : 'dark';
+                applyTheme();
+                saveState();
+            });
+
             elements.batteryCapacity.addEventListener('input', (e) => {
                 state.batteryCapacity = parseFloat(e.target.value) || 0;
                 calculate();
