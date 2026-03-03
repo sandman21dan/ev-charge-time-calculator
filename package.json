@@ -20,7 +20,7 @@
   "scripts": {
     "clean:cache": "rm -rf .parcel-cache dist",
     "start": "parcel",
-    "build": "parcel build",
+    "build": "parcel build --public-url ./",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
